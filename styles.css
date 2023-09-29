@@ -1,0 +1,35 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 50px;
+}
+
+#chatbox {
+    border: 1px solid #ccc;
+    height: 300px;
+    margin-bottom: 20px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+button {
+    margin-right: 10px;
+}
+
+input[type="text"] {
+    width: 300px;
+}
+
+.user, .assistant {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.user {
+    background-color: #e0f7fa;
+}
+
+.assistant {
+    background-color: #ffebee;
+}
