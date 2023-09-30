@@ -31,7 +31,7 @@ async function getChatCompletion(prompt) {
     // Add the user's message to the conversation history
     conversationHistory.push({ role: "user", content: prompt });
 
-    const endpoint = "https://your-vercel-site-name.vercel.app/api/openaiProxy";
+    const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
     const payload = {
         model: "gpt-3.5-turbo",
         messages: conversationHistory
