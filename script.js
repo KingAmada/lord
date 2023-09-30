@@ -1,77 +1,66 @@
+let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+recognition.lang = 'en-US';
+recognition.interimResults = false;
+recognition.maxAlternatives = 1;
 
-const synth = window.speechSynthesis;
-document.addEventListener('DOMContentLoaded', function() {
-    const chatbox = document.getElementById('chatbox');
-    const textInput = document.getElementById('textInput');
-    const startVoiceInput = document.getElementById('startVoiceInput');
-    const sendMessage = document.getElementById('sendMessage');
+let conversationHistory = [];
 
-
-    if (window.SpeechRecognition || window.webkitSpeechRecognition) {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        startVoiceInput.addEventListener('click', function() {
-            recognition.start();
-        });
-
-        recognition.onresult = function(event) {
-            const speechToText = event.results[0][0].transcript;
-            textInput.value = speechToText;
-sendMessage.click(); 
-        };
-    } else {
-        startVoiceInput.disabled = true;
-        startVoiceInput.textContent = 'Voice input not supported';
-    }
-
-    sendMessage.addEventListener('click', async function() {
-        const userMessage = textInput.value;
-        if (userMessage) {
-            displayMessage(userMessage, 'user');
-            const gptResponse = await getChatCompletion(userMessage);
-            displayMessage(gptResponse, 'assistant');
-            textInput.value = '';
-        }
-    });
+document.getElementById("voice-btn").addEventListener("click", () => {
+    recognition.start();
 });
-function speakText(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    synth.speak(utterance);
-}
+
+recognition.onresult = function(event) {
+    const last = event.results.length - 1;
+    const userMessage = event.results[last][0].transcript;
+    displayMessage(userMessage, "user");
+    getChatCompletion(userMessage).then(responseMessage => {
+        displayMessage(responseMessage, "assistant");
+    });
+};
 
 function displayMessage(message, role) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = role;
-    messageDiv.textContent = message;
-    chatbox.appendChild(messageDiv);
- if (role === 'assistant') {
-        speakText(message);
-    }
+    const messageList = document.getElementById("message-list");
+    const messageItem = document.createElement("li");
+    messageItem.className = role;
+    messageItem.textContent = message;
+    messageList.appendChild(messageItem);
+    messageList.scrollTop = messageList.scrollHeight;  // Auto-scroll to latest message
 }
 
 async function getChatCompletion(prompt) {
-    const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
-  
-    const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{ "role": "user", "content": prompt }]
-        })
-    });
+    // Add the user's message to the conversation history
+    conversationHistory.push({ role: "user", content: prompt });
 
-    if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`API Error: ${errorData}`);
+    const endpoint = "https://your-vercel-site-name.vercel.app/api/openaiProxy";
+    const payload = {
+        model: "gpt-3.5-turbo",
+        messages: conversationHistory
+    };
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(`API Error: ${errorData}`);
+        }
+
+        const jsonResponse = await response.json();
+        const assistantReply = jsonResponse.choices[0].message.content;
+
+        // Add the assistant's message to the conversation history
+        conversationHistory.push({ role: "assistant", content: assistantReply });
+
+        return assistantReply;
+
+    } catch (error) {
+        console.error("Error fetching completion:", error);
+        return "Sorry, I encountered an error. Please try again.";
     }
-
-    const jsonResponse = await response.json();
-    return jsonResponse.choices[0].message.content;
 }
-
