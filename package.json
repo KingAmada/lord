@@ -2,6 +2,6 @@
   "name": "lord",
   "version": "1.0.0",
   "dependencies": {
-    "axios": "^0.21.1"  // Check for the latest version on npmjs.com
+    "axios": "^0.21.1"
   }
 }
