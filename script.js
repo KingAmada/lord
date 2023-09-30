@@ -53,7 +53,7 @@ function displayMessage(message, role) {
 }
 
 async function getChatCompletion(prompt) {
-    const endpoint = "https://magical-haupia-fa2c1c.netlify.app/.netlify/functions/openaiProxy";
+    const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
   
     const response = await fetch(endpoint, {
         method: 'POST',
