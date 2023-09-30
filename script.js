@@ -15,9 +15,14 @@ recognition.onresult = function(event) {
     displayMessage(userMessage, "user");
     getChatCompletion(userMessage).then(responseMessage => {
         displayMessage(responseMessage, "assistant");
+        textToSpeech(responseMessage); 
     });
 };
-
+function textToSpeech(text) {
+    let synth = window.speechSynthesis;
+    let utterance = new SpeechSynthesisUtterance(text);
+    synth.speak(utterance);
+}
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
