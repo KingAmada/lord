@@ -53,13 +53,11 @@ function displayMessage(message, role) {
 }
 
 async function getChatCompletion(prompt) {
-    const endpoint = "https://api.openai.com/v1/chat/completions";
-    const apiKey = "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"; // Replace with your actual API key
-
+    const endpoint = "https://magical-haupia-fa2c1c.netlify.app/.netlify/functions/openaiProxy";
+  
     const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -76,3 +74,4 @@ async function getChatCompletion(prompt) {
     const jsonResponse = await response.json();
     return jsonResponse.choices[0].message.content;
 }
+
