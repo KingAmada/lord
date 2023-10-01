@@ -73,7 +73,7 @@ document.getElementById("voice-btn").addEventListener("click", async () => {
 });
 
 function addToChat(role, message) {
-    let chatArea = document.getElementById("chatArea");
+    let chatArea = document.getElementById("message-list");
     let messageDiv = document.createElement("div");
     messageDiv.className = role;
     messageDiv.textContent = `${role}: ${message}`;
