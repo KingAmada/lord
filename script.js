@@ -61,7 +61,7 @@ function playAudioResponse(audioUrl) {
     audio.play();
 }
 
-document.getElementById("voiceInputButton").addEventListener("click", async () => {
+document.getElementById("voice-btn").addEventListener("click", async () => {
     let userMessage = await getVoiceInput();
     addToChat("User", userMessage);
     
