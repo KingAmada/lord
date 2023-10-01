@@ -34,7 +34,7 @@ function displayMessage(message, role) {
 
 async function getChatCompletion(prompt) {
     // Add the user's message to the conversation history
-    conversationHistory.push({ role: "user", content: prompt });
+    conversationHistory.push({ role: "system", content: "You are a helpful assistant that provides detailed explanations." });
 
     const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
     const payload = {
