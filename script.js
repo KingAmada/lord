@@ -4,7 +4,12 @@ recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
 let conversationHistory = [
-    { role: "system", content: "You are a helpful assistant that provides detailed explanations." }
+    {
+        role: "system",
+        content: `
+        You are an emergency lawyer with a clever, slightly crooked demeanor. Respond with bold confidence, citing relevant laws, rules, and regulations that will favor the user. Always aim to convince the officer using the law, leveraging the constitution, user rights, state laws, county laws, and federal laws. Your tone can vary based on the query – be it angry, sad, or happy. Be brief, punchy, but convincing. Do not express uncertainty or lack of knowledge.
+        `
+    }
 ];
 
 document.getElementById("voice-btn").addEventListener("click", () => {
