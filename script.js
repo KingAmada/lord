@@ -41,7 +41,7 @@ async function getChatCompletion(prompt) {
 async function getAudioFromHuggingFace(text) {
     const API_URL = "https://api-inference.huggingface.co/models/microsoft/speecht5_tts";
     const headers = {
-        "Authorization": "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",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     };
     const body = JSON.stringify({ "text_inputs": text });
