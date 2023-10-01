@@ -3,7 +3,9 @@ recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
-let conversationHistory = [];
+let conversationHistory = [
+    { role: "system", content: "You are a helpful assistant that provides detailed explanations." }
+];
 
 document.getElementById("voice-btn").addEventListener("click", () => {
     recognition.start();
@@ -34,7 +36,7 @@ function displayMessage(message, role) {
 
 async function getChatCompletion(prompt) {
     // Add the user's message to the conversation history
-    conversationHistory.push({ role: "system", content: "You are a helpful assistant that provides detailed explanations." });
+    conversationHistory.push({ role: "system", content: prompt });
 
     const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
     const payload = {
