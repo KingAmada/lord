@@ -38,7 +38,7 @@ async function getChatCompletion(prompt) {
 
     const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
     const payload = {
-        model: "gpt-3.5-turbo",
+        model: "gpt-4",
         messages: conversationHistory
     };
 
