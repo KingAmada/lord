@@ -14,7 +14,7 @@ recognition.onresult = function (event) {
         }
     }
 
-    document.getElementById('userInput').textContent = finalTranscript;
+    document.getElementById('input-area').textContent = finalTranscript;
     if (finalTranscript !== '') {
         recognition.stop();
         getChatCompletion(finalTranscript);
