@@ -60,6 +60,8 @@ async function textToSpeech(text) {
 let audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let source = null;
 let startTime = 0;
+let audioQueue = [];
+let currentChunkIndex = 0;
 
 function base64ToUint8Array(base64) {
     const binaryString = atob(base64);
@@ -74,7 +76,6 @@ function base64ToUint8Array(base64) {
 function playDecodedAudio(audioBuffer) {
     if (source) {
         source.stop();
-        source = null;
     }
     source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
@@ -84,6 +85,13 @@ function playDecodedAudio(audioBuffer) {
     }
     source.start(startTime);
     startTime += audioBuffer.duration;
+
+    source.onended = function() {
+        currentChunkIndex++;
+        if (audioQueue[currentChunkIndex]) {
+            playDecodedAudio(audioQueue[currentChunkIndex]);
+        }
+    };
 }
 
 websocket.onmessage = function(event) {
@@ -91,10 +99,14 @@ websocket.onmessage = function(event) {
     if (data.audio) {
         const uint8ArrayData = base64ToUint8Array(data.audio);
         audioContext.decodeAudioData(uint8ArrayData.buffer, function(audioBuffer) {
-            playDecodedAudio(audioBuffer);
+            audioQueue.push(audioBuffer);
+            if (currentChunkIndex === audioQueue.length - 1) {
+                playDecodedAudio(audioQueue[currentChunkIndex]);
+            }
         });
     }
 };
+
 
 
 
