@@ -1,176 +1,109 @@
-let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+const recognition = new webkitSpeechRecognition();
 recognition.lang = 'en-US';
-recognition.interimResults = false;
-recognition.maxAlternatives = 1;
+recognition.continuous = true;
+recognition.interimResults = true;
 
-let conversationHistory = [
-    {
-        role: "system",
-        content: `
-        You are an emergency lawyer with a clever, slightly crooked demeanor. Respond with bold confidence, citing relevant laws, rules, and regulations that will favor the user. Always aim to convince the officer using the law, leveraging the constitution, user rights, state laws, county laws, and federal laws. Your tone can vary based on the query – be it angry, sad, or happy. Be brief, punchy, but convincing. Do not express uncertainty or lack of knowledge.
-        `
+let finalTranscript = '';
+recognition.onresult = function (event) {
+    let interimTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+        } else {
+            interimTranscript += event.results[i][0].transcript;
+        }
     }
-];
 
-document.getElementById("voice-btn").addEventListener("click", () => {
-    recognition.start();
-});
-
-recognition.onresult = function(event) {
-    const last = event.results.length - 1;
-    const userMessage = event.results[last][0].transcript;
-    displayMessage(userMessage, "user");
-    getChatCompletion(userMessage).then(responseMessage => {
-        displayMessage(responseMessage, "assistant");
-        textToSpeech(responseMessage); 
-    });
+    document.getElementById('userInput').textContent = finalTranscript;
+    if (finalTranscript !== '') {
+        recognition.stop();
+        getChatCompletion(finalTranscript);
+    }
 };
-async function textToSpeech(text) {
-    const voice_id = "RJO0iuGY1b2uPkmEOIDS";  // Placeholder, replace this with the desired voice ID
-    const model = 'eleven_monolingual_v1';
-    const uri = `wss://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream-input?model_id=${model}`;
 
-    let audioChunks = [];
+recognition.onerror = function (event) {
+    console.log('Error occurred in recognition:', event.error);
+};
 
-    const websocket = new WebSocket(uri);
-
-    websocket.onopen = function(event) {
-        // Initialize the connection with initial settings
-        websocket.send(JSON.stringify({
-            "text": " ",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": true
-            },
-            "xi_api_key": "57311814f19ad395d1442578df566233"
-        }));
-
-        // Send the text to be converted to speech
-        websocket.send(JSON.stringify({
-            "text": text + " ",
-            "try_trigger_generation": true
-        }));
-
-        // Send the End of Sequence (EOS) message
-        websocket.send(JSON.stringify({
-            "text": ""
-        }));
-    };
-    
-const CHUNK_BUFFER_SIZE = 3; // Number of chunks to buffer before starting playback
-
-// Convert base64 to ArrayBuffer
-function base64ToArrayBuffer(base64) {
-    const binaryString = window.atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
+function startRecognition() {
+    finalTranscript = '';
+    recognition.start();
 }
 
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-let sourceNode = null;
-let chunkBuffer = [];
+let audioBuffer = [];
 let isPlaying = false;
 
-const COMBINED_CHUNK_SIZE = 3; // Number of chunks to combine before decoding
-
-function playNextChunk() {
-    if (chunkBuffer.length < COMBINED_CHUNK_SIZE) {
+function playAudio() {
+    if (audioBuffer.length === 0) {
         isPlaying = false;
         return;
     }
 
-    // Combine multiple chunks together
-    const combinedChunks = [];
-    for (let i = 0; i < COMBINED_CHUNK_SIZE; i++) {
-        combinedChunks.push(...new Uint8Array(chunkBuffer.shift()));
-    }
-    const audioBuffer = new Uint8Array(combinedChunks).buffer;
-
-    audioContext.decodeAudioData(audioBuffer, function(buffer) {
-        sourceNode = audioContext.createBufferSource();
-        sourceNode.buffer = buffer;
-        sourceNode.connect(audioContext.destination);
-        sourceNode.onended = playNextChunk;
-        sourceNode.start();
-    }, function(error) {
-        console.error("Error decoding audio data:", error);
-        playNextChunk(); // Skip this chunk and try the next one
+    isPlaying = true;
+    const audioChunk = audioBuffer.shift();
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    audioContext.decodeAudioData(audioChunk.buffer, function (buffer) {
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.onended = playAudio;
+        source.start(0);
+    }, function (err) {
+        console.log('Error decoding audio:', err);
     });
 }
 
-websocket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
+function textToSpeech(text) {
+    const websocket = new WebSocket('wss://api.openai.com/v1/tts/ws');
+    websocket.onopen = function () {
+        websocket.send(JSON.stringify({ text: text }));
+    };
 
-    if (data.audio) {
-        chunkBuffer.push(base64ToArrayBuffer(data.audio));
-
-        if (!isPlaying && chunkBuffer.length >= CHUNK_BUFFER_SIZE) {
-            isPlaying = true;
-            playNextChunk();
+    websocket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        if (data.audio) {
+            const audioChunk = base64ToUint8Array(data.audio);
+            audioBuffer.push(audioChunk);
+            if (!isPlaying) {
+                playAudio();
+            }
         }
+    };
+
+    websocket.onerror = function (event) {
+        console.error('WebSocket Error:', event);
+    };
+
+    websocket.onclose = function (event) {
+        if (event.code !== 1000) {
+            console.warn('WebSocket closed unexpectedly. Code:', event.code, 'Reason:', event.reason);
+        }
+    };
+}
+
+function getChatCompletion(prompt) {
+    fetch('/complete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: prompt })
+    }).then(response => response.json()).then(data => {
+        document.getElementById('chatOutput').textContent = data.completion;
+        textToSpeech(data.completion);
+    }).catch(error => {
+        console.error('Error fetching chat completion:', error);
+    });
+}
+
+function base64ToUint8Array(base64) {
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
     }
-};
-
-    websocket.onerror = function(error) {
-        console.error("WebSocket Error:", error);
-    };
-
-    websocket.onclose = function(event) {
-        if (event.wasClean) {
-            console.log(`Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
-        } else {
-            console.error('Connection died');
-        }
-    };
+    return bytes;
 }
 
-
-function displayMessage(message, role) {
-    const messageList = document.getElementById("message-list");
-    const messageItem = document.createElement("li");
-    messageItem.className = role;
-    messageItem.textContent = message;
-    messageList.appendChild(messageItem);
-    messageList.scrollTop = messageList.scrollHeight;  // Auto-scroll to latest message
-}
-
-async function getChatCompletion(prompt) {
-    // Add the user's message to the conversation history
-    conversationHistory.push({ role: "system", content: prompt });
-
-    const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
-    const payload = {
-        model: "gpt-4",
-        messages: conversationHistory
-    };
-
-    try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.text();
-            throw new Error(`API Error: ${errorData}`);
-        }
-
-        const jsonResponse = await response.json();
-        const assistantReply = jsonResponse.choices[0].message.content;
-
-        // Add the assistant's message to the conversation history
-        conversationHistory.push({ role: "assistant", content: assistantReply });
-
-        return assistantReply;
-
-    } catch (error) {
-        console.error("Error fetching completion:", error);
-        return "Sorry, I encountered an error. Please try again.";
-    }
-}
+document.getElementById('startButton').addEventListener('click', startRecognition);
