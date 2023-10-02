@@ -57,20 +57,23 @@ async function textToSpeech(text) {
         }));
     };
 
-    websocket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.audio) {
-            audioChunks.push(data.audio);
-        }
+websocket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.audio) {
+        console.log("Received audio chunk:", data.audio);  // Log the received audio chunk
+        audioChunks.push(data.audio);
+    }
 
-        // If the generation is complete, play the audio
-        if (data.isFinal) {
-            const audioBlob = new Blob([new Uint8Array(audioChunks.map(chunk => base64ToArrayBuffer(chunk)).flat())], { type: 'audio/mp3' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioUrl);
-            audio.play();
-        }
-    };
+    // If the generation is complete, play the audio
+    if (data.isFinal) {
+        const audioBlob = new Blob([new Uint8Array(audioChunks.map(chunk => base64ToArrayBuffer(chunk)).flat())], { type: 'audio/mp3' });
+        console.log("Audio Blob size:", audioBlob.size);  // Log the Blob's size
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+    }
+};
+
 
     websocket.onerror = function(error) {
         console.error("WebSocket Error:", error);
