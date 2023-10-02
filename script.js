@@ -57,8 +57,9 @@ async function textToSpeech(text) {
         }));
     };
 
-let audioQueue = [];
-let isPlaying = false;
+let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let source = null;
+let startTime = 0;
 
 function base64ToUint8Array(base64) {
     const binaryString = atob(base64);
@@ -70,30 +71,28 @@ function base64ToUint8Array(base64) {
     return bytes;
 }
 
-function playNextAudio() {
-    if (audioQueue.length === 0) {
-        isPlaying = false;
-        return;
+function playDecodedAudio(audioBuffer) {
+    if (source) {
+        source.stop();
+        source = null;
     }
-    
-    const audioUrl = audioQueue.shift(); // Dequeue the next audio URL
-    const audio = new Audio(audioUrl);
-    audio.onended = playNextAudio; // When audio ends, play the next one
-    audio.play();
-    isPlaying = true;
+    source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioContext.destination);
+    if (startTime === 0) {
+        startTime = audioContext.currentTime;
+    }
+    source.start(startTime);
+    startTime += audioBuffer.duration;
 }
 
 websocket.onmessage = function(event) {
     const data = JSON.parse(event.data);
     if (data.audio) {
         const uint8ArrayData = base64ToUint8Array(data.audio);
-        const audioBlob = new Blob([uint8ArrayData], { type: 'audio/mp3' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        audioQueue.push(audioUrl); // Enqueue the new audio URL
-        
-        if (!isPlaying) {
-            playNextAudio();
-        }
+        audioContext.decodeAudioData(uint8ArrayData.buffer, function(audioBuffer) {
+            playDecodedAudio(audioBuffer);
+        });
     }
 };
 
