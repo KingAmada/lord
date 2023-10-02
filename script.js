@@ -26,9 +26,21 @@ recognition.onresult = function(event) {
     });
 };
 function textToSpeech(text) {
-    let synth = window.speechSynthesis;
-    let utterance = new SpeechSynthesisUtterance(text);
-    synth.speak(utterance);
+    fetch('https://eleven-alpha.vercel.app/api/tts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: text })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let audio = new Audio(data.audio);
+        audio.play();
+    })
+    .catch(error => {
+        console.error("Error fetching audio:", error);
+    });
 }
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
