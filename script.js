@@ -56,11 +56,6 @@ async function textToSpeech(text) {
             "text": ""
         }));
     };
-
-let audioContext = new AudioContext();
-let audioQueue = [];
-let startTime = 0;
-let source = null;
     
 // Convert base64 to ArrayBuffer
 function base64ToArrayBuffer(base64) {
