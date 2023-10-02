@@ -73,24 +73,28 @@ function base64ToUint8Array(base64) {
     return bytes;
 }
 
-function playDecodedAudio(audioBuffer) {
+function playDecodedAudio() {
+    if (audioQueue.length === 0) return;
+
     if (source) {
         source.stop();
+        source = null;
     }
+
+    let audioBuffer = audioQueue.shift();
     source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(audioContext.destination);
-    if (startTime === 0) {
+
+    if (startTime === 0 || startTime < audioContext.currentTime) {
         startTime = audioContext.currentTime;
     }
+
     source.start(startTime);
     startTime += audioBuffer.duration;
 
     source.onended = function() {
-        currentChunkIndex++;
-        if (audioQueue[currentChunkIndex]) {
-            playDecodedAudio(audioQueue[currentChunkIndex]);
-        }
+        playDecodedAudio();
     };
 }
 
@@ -100,12 +104,13 @@ websocket.onmessage = function(event) {
         const uint8ArrayData = base64ToUint8Array(data.audio);
         audioContext.decodeAudioData(uint8ArrayData.buffer, function(audioBuffer) {
             audioQueue.push(audioBuffer);
-            if (currentChunkIndex === audioQueue.length - 1) {
-                playDecodedAudio(audioQueue[currentChunkIndex]);
+            if (source === null || source.playbackState === source.FINISHED_STATE) {
+                playDecodedAudio();
             }
         });
     }
 };
+
 
 
 
