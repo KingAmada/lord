@@ -1,81 +1,78 @@
-let conversionHistory = [];
+let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+recognition.lang = 'en-US';
+recognition.interimResults = false;
+recognition.maxAlternatives = 1;
 
-async function getVoiceInput() {
-    return new Promise((resolve) => {
-        const recognition = new webkitSpeechRecognition();
-        recognition.lang = 'en-US';
+let conversationHistory = [
+    {
+        role: "system",
+        content: `
+        You are an emergency lawyer with a clever, slightly crooked demeanor. Respond with bold confidence, citing relevant laws, rules, and regulations that will favor the user. Always aim to convince the officer using the law, leveraging the constitution, user rights, state laws, county laws, and federal laws. Your tone can vary based on the query – be it angry, sad, or happy. Be brief, punchy, but convincing. Do not express uncertainty or lack of knowledge.
+        `
+    }
+];
 
-        recognition.onresult = (event) => {
-            let transcript = event.results[0][0].transcript;
-            resolve(transcript);
-        };
+document.getElementById("voice-btn").addEventListener("click", () => {
+    recognition.start();
+});
 
-        recognition.start();
+recognition.onresult = function(event) {
+    const last = event.results.length - 1;
+    const userMessage = event.results[last][0].transcript;
+    displayMessage(userMessage, "user");
+    getChatCompletion(userMessage).then(responseMessage => {
+        displayMessage(responseMessage, "assistant");
+        textToSpeech(responseMessage); 
     });
+};
+function textToSpeech(text) {
+    let synth = window.speechSynthesis;
+    let utterance = new SpeechSynthesisUtterance(text);
+    synth.speak(utterance);
+}
+function displayMessage(message, role) {
+    const messageList = document.getElementById("message-list");
+    const messageItem = document.createElement("li");
+    messageItem.className = role;
+    messageItem.textContent = message;
+    messageList.appendChild(messageItem);
+    messageList.scrollTop = messageList.scrollHeight;  // Auto-scroll to latest message
 }
 
 async function getChatCompletion(prompt) {
-    conversionHistory.push({ role: "user", content: prompt });
-    
-    const response = await fetch("/api/openaiProxy", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: conversionHistory
-        })
-    });
+    // Add the user's message to the conversation history
+    conversationHistory.push({ role: "system", content: prompt });
 
-    if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`API Error: ${errorData}`);
-    }
-
-    const jsonResponse = await response.json();
-    conversionHistory.push({ role: "assistant", content: jsonResponse.choices[0].message.content });
-    return jsonResponse.choices[0].message.content;
-}
-
-async function getAudioFromHuggingFace(text) {
-    const API_URL = "https://api-inference.huggingface.co/models/microsoft/speecht5_tts";
-    const headers = {
-        "Authorization": "Bearer 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",
-        "Content-Type": "application/json"
+    const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
+    const payload = {
+        model: "gpt-4",
+        messages: conversationHistory
     };
-    const body = JSON.stringify({ "text_inputs": text });
 
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: headers,
-        body: body
-    });
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
 
-    const responseData = await response.json();
-    return responseData.audio_url;  // Assuming the API returns an audio URL
-}
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(`API Error: ${errorData}`);
+        }
 
-function playAudioResponse(audioUrl) {
-    let audio = new Audio(audioUrl);
-    audio.play();
-}
+        const jsonResponse = await response.json();
+        const assistantReply = jsonResponse.choices[0].message.content;
 
-document.getElementById("voice-btn").addEventListener("click", async () => {
-    let userMessage = await getVoiceInput();
-    addToChat("User", userMessage);
-    
-    let chatGPTResponse = await getChatCompletion(userMessage);
-    addToChat("ChatGPT", chatGPTResponse);
+        // Add the assistant's message to the conversation history
+        conversationHistory.push({ role: "assistant", content: assistantReply });
 
-    let audioUrl = await getAudioFromHuggingFace(chatGPTResponse);
-    playAudioResponse(audioUrl);
-});
+        return assistantReply;
 
-function addToChat(role, message) {
-    let chatArea = document.getElementById("message-list");
-    let messageDiv = document.createElement("div");
-    messageDiv.className = role;
-    messageDiv.textContent = `${role}: ${message}`;
-    chatArea.appendChild(messageDiv);
+    } catch (error) {
+        console.error("Error fetching completion:", error);
+        return "Sorry, I encountered an error. Please try again.";
+    }
 }
