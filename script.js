@@ -25,11 +25,75 @@ recognition.onresult = function(event) {
         textToSpeech(responseMessage); 
     });
 };
-function textToSpeech(text) {
-    let synth = window.speechSynthesis;
-    let utterance = new SpeechSynthesisUtterance(text);
-    synth.speak(utterance);
+async function textToSpeech(text) {
+    const voice_id = "default_voice_id";  // Placeholder, replace this with the desired voice ID
+    const model = 'eleven_monolingual_v1';
+    const uri = `wss://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream-input?model_id=${model}`;
+
+    let audioChunks = [];
+
+    const websocket = new WebSocket(uri);
+
+    websocket.onopen = function(event) {
+        // Initialize the connection with initial settings
+        websocket.send(JSON.stringify({
+            "text": " ",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": true
+            },
+            "xi_api_key": "57311814f19ad395d1442578df566233"
+        }));
+
+        // Send the text to be converted to speech
+        websocket.send(JSON.stringify({
+            "text": text + " ",
+            "try_trigger_generation": true
+        }));
+
+        // Send the End of Sequence (EOS) message
+        websocket.send(JSON.stringify({
+            "text": ""
+        }));
+    };
+
+    websocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.audio) {
+            audioChunks.push(data.audio);
+        }
+
+        // If the generation is complete, play the audio
+        if (data.isFinal) {
+            const audioBlob = new Blob([new Uint8Array(audioChunks.map(chunk => base64ToArrayBuffer(chunk)).flat())], { type: 'audio/mp3' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            audio.play();
+        }
+    };
+
+    websocket.onerror = function(error) {
+        console.error("WebSocket Error:", error);
+    };
+
+    websocket.onclose = function(event) {
+        if (event.wasClean) {
+            console.log(`Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.error('Connection died');
+        }
+    };
 }
+
+function base64ToArrayBuffer(base64) {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
+
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
