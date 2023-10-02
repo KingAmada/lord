@@ -26,7 +26,7 @@ recognition.onresult = function(event) {
     });
 };
 async function textToSpeech(text) {
-    const voice_id = "21m00Tcm4TlvDq8ikWAM";  // Placeholder, replace this with the desired voice ID
+    const voice_id = "RJO0iuGY1b2uPkmEOIDS";  // Placeholder, replace this with the desired voice ID
     const model = 'eleven_monolingual_v1';
     const uri = `wss://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream-input?model_id=${model}`;
 
@@ -57,46 +57,45 @@ async function textToSpeech(text) {
         }));
     };
 
-let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-let source = null;
-let startTime = 0;
+let audioContext = new AudioContext();
 let audioQueue = [];
-let currentChunkIndex = 0;
+let startTime = 0;
+let source = null;
 
-function base64ToUint8Array(base64) {
-    const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
-}
-
+// Function to play decoded audio buffers
 function playDecodedAudio() {
-    if (audioQueue.length === 0) return;
-
-    if (source) {
-        source.stop();
-        source = null;
+    if (audioQueue.length === 0) {
+        return;
     }
 
-    let audioBuffer = audioQueue.shift();
     source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
+    source.buffer = audioQueue.shift();
     source.connect(audioContext.destination);
-
-    if (startTime === 0 || startTime < audioContext.currentTime) {
+    
+    if (startTime < audioContext.currentTime) {
         startTime = audioContext.currentTime;
     }
 
     source.start(startTime);
-    startTime += audioBuffer.duration;
-
-    source.onended = function() {
-        playDecodedAudio();
-    };
+    startTime += source.buffer.duration;
+    source.onended = playDecodedAudio;
 }
+
+websocket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.audio) {
+        console.log("Received audio chunk size:", data.audio.length);
+        const uint8ArrayData = new Uint8Array(base64ToArrayBuffer(data.audio));
+
+        audioContext.decodeAudioData(uint8ArrayData.buffer, function(audioBuffer) {
+            audioQueue.push(audioBuffer);
+            if (!source || (source && source.playbackState === source.FINISHED_STATE)) {
+                playDecodedAudio();
+            }
+        });
+    }
+};
+
 
 websocket.onmessage = function(event) {
     const data = JSON.parse(event.data);
