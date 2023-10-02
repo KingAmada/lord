@@ -74,20 +74,30 @@ let sourceNode = null;
 let chunkBuffer = [];
 let isPlaying = false;
 
+const COMBINED_CHUNK_SIZE = 3; // Number of chunks to combine before decoding
+
 function playNextChunk() {
-    if (chunkBuffer.length === 0) {
+    if (chunkBuffer.length < COMBINED_CHUNK_SIZE) {
         isPlaying = false;
         return;
     }
 
-    const audioBuffer = chunkBuffer.shift(); // Dequeue the next chunk
+    // Combine multiple chunks together
+    const combinedChunks = [];
+    for (let i = 0; i < COMBINED_CHUNK_SIZE; i++) {
+        combinedChunks.push(...new Uint8Array(chunkBuffer.shift()));
+    }
+    const audioBuffer = new Uint8Array(combinedChunks).buffer;
 
     audioContext.decodeAudioData(audioBuffer, function(buffer) {
         sourceNode = audioContext.createBufferSource();
         sourceNode.buffer = buffer;
         sourceNode.connect(audioContext.destination);
-        sourceNode.onended = playNextChunk; // When the chunk finishes playing, play the next one
+        sourceNode.onended = playNextChunk;
         sourceNode.start();
+    }, function(error) {
+        console.error("Error decoding audio data:", error);
+        playNextChunk(); // Skip this chunk and try the next one
     });
 }
 
