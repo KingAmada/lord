@@ -70,7 +70,7 @@ async function getChatCompletion(prompt) {
         conversationHistory.push({ role: "assistant", content: assistantReply });
 
         // Send the OpenAI response to the new serverless function to get TTS audio URL
-        const ttsResponse = await fetch('https://eleven-alpha.vercel.app/api/tts', {
+        const ttsResponse = await fetch('https://lord-nine.vercel.app/api/tts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
