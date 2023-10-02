@@ -57,6 +57,8 @@ async function textToSpeech(text) {
         }));
     };
     
+const CHUNK_BUFFER_SIZE = 3; // Number of chunks to buffer before starting playback
+
 // Convert base64 to ArrayBuffer
 function base64ToArrayBuffer(base64) {
     const binaryString = window.atob(base64);
@@ -67,39 +69,40 @@ function base64ToArrayBuffer(base64) {
     return bytes.buffer;
 }
 
-// The audio context and the source node are created outside the WebSocket
-// message handler to ensure they are not re-created for every chunk.
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let sourceNode = null;
+let chunkBuffer = [];
+let isPlaying = false;
+
+function playNextChunk() {
+    if (chunkBuffer.length === 0) {
+        isPlaying = false;
+        return;
+    }
+
+    const audioBuffer = chunkBuffer.shift(); // Dequeue the next chunk
+
+    audioContext.decodeAudioData(audioBuffer, function(buffer) {
+        sourceNode = audioContext.createBufferSource();
+        sourceNode.buffer = buffer;
+        sourceNode.connect(audioContext.destination);
+        sourceNode.onended = playNextChunk; // When the chunk finishes playing, play the next one
+        sourceNode.start();
+    });
+}
 
 websocket.onmessage = function(event) {
     const data = JSON.parse(event.data);
 
-    // When an audio chunk is received, decode and play it
     if (data.audio) {
-        const audioBuffer = base64ToArrayBuffer(data.audio);
-        audioContext.decodeAudioData(audioBuffer, function(buffer) {
-            // Stop the previous source node if it's still playing
-            if (sourceNode) {
-                sourceNode.stop();
-            }
+        chunkBuffer.push(base64ToArrayBuffer(data.audio));
 
-            // Create a new source node for the current chunk
-            sourceNode = audioContext.createBufferSource();
-            sourceNode.buffer = buffer;
-            sourceNode.connect(audioContext.destination);
-
-            // Start playing the current audio chunk
-            sourceNode.start();
-
-            // If this is the last chunk, you can add any other logic needed here
-            if (data.isFinal) {
-                // For example, you might want to change some UI elements or notify the user
-            }
-        });
+        if (!isPlaying && chunkBuffer.length >= CHUNK_BUFFER_SIZE) {
+            isPlaying = true;
+            playNextChunk();
+        }
     }
 };
-
 
     websocket.onerror = function(error) {
         console.error("WebSocket Error:", error);
