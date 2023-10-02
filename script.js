@@ -26,7 +26,7 @@ recognition.onresult = function(event) {
     });
 };
 async function textToSpeech(text) {
-    const voice_id = "default_voice_id";  // Placeholder, replace this with the desired voice ID
+    const voice_id = "21m00Tcm4TlvDq8ikWAM";  // Placeholder, replace this with the desired voice ID
     const model = 'eleven_monolingual_v1';
     const uri = `wss://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream-input?model_id=${model}`;
 
