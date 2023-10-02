@@ -20,28 +20,16 @@ recognition.onresult = function(event) {
     const last = event.results.length - 1;
     const userMessage = event.results[last][0].transcript;
     displayMessage(userMessage, "user");
-    getChatCompletion(userMessage).then(responseMessage => {
-        displayMessage(responseMessage, "assistant");
-        textToSpeech(responseMessage); 
+    getChatCompletion(userMessage).then(audioUrl => {
+        playAudio(audioUrl);
     });
 };
-function textToSpeech(text) {
-    fetch('https://eleven-alpha.vercel.app/api/tts', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ text: text })
-    })
-    .then(response => response.json())
-    .then(data => {
-        let audio = new Audio(data.audio);
-        audio.play();
-    })
-    .catch(error => {
-        console.error("Error fetching audio:", error);
-    });
+
+function playAudio(audioUrl) {
+    const audio = new Audio(audioUrl);
+    audio.play();
 }
+
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
@@ -81,7 +69,17 @@ async function getChatCompletion(prompt) {
         // Add the assistant's message to the conversation history
         conversationHistory.push({ role: "assistant", content: assistantReply });
 
-        return assistantReply;
+        // Send the OpenAI response to the new serverless function to get TTS audio URL
+        const ttsResponse = await fetch('https://eleven-alpha.vercel.app/api/tts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text: assistantReply })
+        });
+
+        const ttsData = await ttsResponse.json();
+        return ttsData.audio;
 
     } catch (error) {
         console.error("Error fetching completion:", error);
