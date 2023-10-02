@@ -57,6 +57,9 @@ async function textToSpeech(text) {
         }));
     };
 
+let audioQueue = [];
+let isPlaying = false;
+
 function base64ToUint8Array(base64) {
     const binaryString = atob(base64);
     const len = binaryString.length;
@@ -67,35 +70,33 @@ function base64ToUint8Array(base64) {
     return bytes;
 }
 
+function playNextAudio() {
+    if (audioQueue.length === 0) {
+        isPlaying = false;
+        return;
+    }
+    
+    const audioUrl = audioQueue.shift(); // Dequeue the next audio URL
+    const audio = new Audio(audioUrl);
+    audio.onended = playNextAudio; // When audio ends, play the next one
+    audio.play();
+    isPlaying = true;
+}
+
 websocket.onmessage = function(event) {
     const data = JSON.parse(event.data);
     if (data.audio) {
-        console.log("Received audio chunk:", data.audio);
         const uint8ArrayData = base64ToUint8Array(data.audio);
-        audioChunks.push(uint8ArrayData);
-    }
-
-    // If the generation is complete, play the audio
-    if (data.isFinal) {
-        const concatenatedData = new Uint8Array(audioChunks.reduce((acc, val) => acc.concat(Array.from(val)), []));
-        console.log("Concatenated data size:", concatenatedData.length);
-        
-        const audioBlob = new Blob([concatenatedData], { type: 'audio/mp3' });
-        console.log("Audio Blob size:", audioBlob.size);
-
+        const audioBlob = new Blob([uint8ArrayData], { type: 'audio/mp3' });
         const audioUrl = URL.createObjectURL(audioBlob);
-
-        // Create a download link for the audio blob to verify the audio data
-        const downloadLink = document.createElement('a');
-        downloadLink.href = audioUrl;
-        downloadLink.download = 'audio.mp3';
-        downloadLink.innerText = 'Download Audio';
-        document.body.appendChild(downloadLink);
+        audioQueue.push(audioUrl); // Enqueue the new audio URL
         
-        const audio = new Audio(audioUrl);
-        audio.play();
+        if (!isPlaying) {
+            playNextAudio();
+        }
     }
 };
+
 
 
 
