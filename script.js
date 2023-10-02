@@ -62,6 +62,7 @@ let audioQueue = [];
 let startTime = 0;
 let source = null;
     
+// Convert base64 to ArrayBuffer
 function base64ToArrayBuffer(base64) {
     const binaryString = window.atob(base64);
     const bytes = new Uint8Array(binaryString.length);
@@ -71,57 +72,38 @@ function base64ToArrayBuffer(base64) {
     return bytes.buffer;
 }
 
-// Function to play decoded audio buffers
-function playDecodedAudio() {
-    if (audioQueue.length === 0) {
-        return;
-    }
-
-    source = audioContext.createBufferSource();
-    source.buffer = audioQueue.shift();
-    source.connect(audioContext.destination);
-    
-    if (startTime < audioContext.currentTime) {
-        startTime = audioContext.currentTime;
-    }
-
-    source.start(startTime);
-    startTime += source.buffer.duration;
-    source.onended = playDecodedAudio;
-}
+// The audio context and the source node are created outside the WebSocket
+// message handler to ensure they are not re-created for every chunk.
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let sourceNode = null;
 
 websocket.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    if (data.audio) {
-        console.log("Received audio chunk size:", data.audio.length);
-        const uint8ArrayData = new Uint8Array(base64ToArrayBuffer(data.audio));
 
-        audioContext.decodeAudioData(uint8ArrayData.buffer, function(audioBuffer) {
-            audioQueue.push(audioBuffer);
-            if (!source || (source && source.playbackState === source.FINISHED_STATE)) {
-                playDecodedAudio();
+    // When an audio chunk is received, decode and play it
+    if (data.audio) {
+        const audioBuffer = base64ToArrayBuffer(data.audio);
+        audioContext.decodeAudioData(audioBuffer, function(buffer) {
+            // Stop the previous source node if it's still playing
+            if (sourceNode) {
+                sourceNode.stop();
+            }
+
+            // Create a new source node for the current chunk
+            sourceNode = audioContext.createBufferSource();
+            sourceNode.buffer = buffer;
+            sourceNode.connect(audioContext.destination);
+
+            // Start playing the current audio chunk
+            sourceNode.start();
+
+            // If this is the last chunk, you can add any other logic needed here
+            if (data.isFinal) {
+                // For example, you might want to change some UI elements or notify the user
             }
         });
     }
 };
-
-
-websocket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    if (data.audio) {
-        const uint8ArrayData = base64ToUint8Array(data.audio);
-        audioContext.decodeAudioData(uint8ArrayData.buffer, function(audioBuffer) {
-            audioQueue.push(audioBuffer);
-            if (source === null || source.playbackState === source.FINISHED_STATE) {
-                playDecodedAudio();
-            }
-        });
-    }
-};
-
-
-
-
 
 
     websocket.onerror = function(error) {
