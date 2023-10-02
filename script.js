@@ -106,4 +106,4 @@ function base64ToUint8Array(base64) {
     return bytes;
 }
 
-document.getElementById('startButton').addEventListener('click', startRecognition);
+document.getElementById('voice-btn').addEventListener('click', startRecognition);
