@@ -98,11 +98,12 @@ websocket.onmessage = function(event) {
 
 function base64ToArrayBuffer(base64) {
     const binaryString = atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
         bytes[i] = binaryString.charCodeAt(i);
     }
-    return bytes;
+    return bytes.buffer;
 }
 
 function displayMessage(message, role) {
