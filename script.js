@@ -66,6 +66,8 @@ websocket.onmessage = function(event) {
 
     // If the generation is complete, play the audio
     if (data.isFinal) {
+        const totalSize = audioChunks.reduce((total, chunk) => total + chunk.length, 0);
+console.log("Total size of all audio chunks:", totalSize);
         const audioBlob = new Blob([new Uint8Array(audioChunks.map(chunk => base64ToArrayBuffer(chunk)).flat())], { type: 'audio/mp3' });
         console.log("Audio Blob size:", audioBlob.size);
         const audioUrl = URL.createObjectURL(audioBlob);
