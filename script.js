@@ -60,15 +60,23 @@ async function textToSpeech(text) {
 websocket.onmessage = function(event) {
     const data = JSON.parse(event.data);
     if (data.audio) {
-        console.log("Received audio chunk:", data.audio);  // Log the received audio chunk
+        console.log("Received audio chunk:", data.audio);
         audioChunks.push(data.audio);
     }
 
     // If the generation is complete, play the audio
     if (data.isFinal) {
         const audioBlob = new Blob([new Uint8Array(audioChunks.map(chunk => base64ToArrayBuffer(chunk)).flat())], { type: 'audio/mp3' });
-        console.log("Audio Blob size:", audioBlob.size);  // Log the Blob's size
+        console.log("Audio Blob size:", audioBlob.size);
         const audioUrl = URL.createObjectURL(audioBlob);
+
+        // Create a download link for the audio blob to verify the audio data
+        const downloadLink = document.createElement('a');
+        downloadLink.href = audioUrl;
+        downloadLink.download = 'audio.mp3';
+        downloadLink.innerText = 'Download Audio';
+        document.body.appendChild(downloadLink);
+        
         const audio = new Audio(audioUrl);
         audio.play();
     }
