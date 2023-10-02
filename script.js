@@ -57,19 +57,32 @@ async function textToSpeech(text) {
         }));
     };
 
+function base64ToUint8Array(base64) {
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
+
 websocket.onmessage = function(event) {
     const data = JSON.parse(event.data);
     if (data.audio) {
         console.log("Received audio chunk:", data.audio);
-        audioChunks.push(data.audio);
+        const uint8ArrayData = base64ToUint8Array(data.audio);
+        audioChunks.push(uint8ArrayData);
     }
 
     // If the generation is complete, play the audio
     if (data.isFinal) {
-        const totalSize = audioChunks.reduce((total, chunk) => total + chunk.length, 0);
-console.log("Total size of all audio chunks:", totalSize);
-        const audioBlob = new Blob([new Uint8Array(audioChunks.map(chunk => base64ToArrayBuffer(chunk)).flat())], { type: 'audio/mp3' });
+        const concatenatedData = new Uint8Array(audioChunks.reduce((acc, val) => acc.concat(Array.from(val)), []));
+        console.log("Concatenated data size:", concatenatedData.length);
+        
+        const audioBlob = new Blob([concatenatedData], { type: 'audio/mp3' });
         console.log("Audio Blob size:", audioBlob.size);
+
         const audioUrl = URL.createObjectURL(audioBlob);
 
         // Create a download link for the audio blob to verify the audio data
@@ -85,6 +98,7 @@ console.log("Total size of all audio chunks:", totalSize);
 };
 
 
+
     websocket.onerror = function(error) {
         console.error("WebSocket Error:", error);
     };
@@ -98,15 +112,6 @@ console.log("Total size of all audio chunks:", totalSize);
     };
 }
 
-function base64ToArrayBuffer(base64) {
-    const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
 
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
