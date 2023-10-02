@@ -20,16 +20,16 @@ recognition.onresult = function(event) {
     const last = event.results.length - 1;
     const userMessage = event.results[last][0].transcript;
     displayMessage(userMessage, "user");
-    getChatCompletion(userMessage).then(audioUrl => {
-        playAudio(audioUrl);
+    getChatCompletion(userMessage).then(responseMessage => {
+        displayMessage(responseMessage, "assistant");
+        textToSpeech(responseMessage); 
     });
 };
-
-function playAudio(audioUrl) {
-    const audio = new Audio(audioUrl);
-    audio.play();
+function textToSpeech(text) {
+    let synth = window.speechSynthesis;
+    let utterance = new SpeechSynthesisUtterance(text);
+    synth.speak(utterance);
 }
-
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
@@ -69,17 +69,7 @@ async function getChatCompletion(prompt) {
         // Add the assistant's message to the conversation history
         conversationHistory.push({ role: "assistant", content: assistantReply });
 
-        // Send the OpenAI response to the new serverless function to get TTS audio URL
-        const ttsResponse = await fetch('https://lord-nine.vercel.app/api/tts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ text: assistantReply })
-        });
-
-        const ttsData = await ttsResponse.json();
-        return ttsData.audio;
+        return assistantReply;
 
     } catch (error) {
         console.error("Error fetching completion:", error);
