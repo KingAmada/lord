@@ -3,6 +3,36 @@ recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
+function textToSpeech(text) {
+    // Determine the browser
+    const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    if (isChrome) {
+        // Use Google's voice in Chrome
+        speakWithVoice(text, "Google US English");
+    } else if (isSafari) {
+        // Use Siri's voice in Safari
+        speakWithVoice(text, "Samantha"); // Samantha is often the name for Siri's voice in Safari
+    } else {
+        console.error("Unsupported browser");
+    }
+}
+
+function speakWithVoice(text, voiceName) {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    const voices = synth.getVoices();
+    const targetVoice = voices.find(voice => voice.name === voiceName);
+
+    if (targetVoice) {
+        utterance.voice = targetVoice;
+        synth.speak(utterance);
+    } else {
+        console.error(`Voice with name "${voiceName}" not found.`);
+    }
+}
 let conversationHistory = [
     {
         role: "system",
