@@ -48,7 +48,7 @@ function textToSpeech(text) {
 
     if (isChrome) {
         // Use Google's voice in Chrome
-        speakWithVoice(text, "Google UK English Female");
+        speakWithVoice(text, "Samantha");
     } else if (isSafari) {
         // Use Siri's voice in Safari
         speakWithVoice(text, "Samantha"); // Samantha is often the name for Siri's voice in Safari
