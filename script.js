@@ -43,11 +43,10 @@ function textToSpeech(text) {
     if (isChrome) {
         // Use Google's voice in Chrome
         speakWithVoice(text, "Samantha");
-        logVoices();
+    
     } else if (isSafari) {
         // Use Siri's voice in Safari
         speakWithVoice(text, "Samantha"); // Samantha is often the name for Siri's voice in Safari
-        logVoices();
     } else {
         console.error("Unsupported browser");
     }
