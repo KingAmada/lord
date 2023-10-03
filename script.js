@@ -42,9 +42,8 @@ recognition.onresult = function(event) {
 };
 function textToSpeech(text) {
     // Determine the browser
-    const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
+    let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
+let isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
     if (isChrome) {
         // Use Google's voice in Chrome
         speakWithVoice(text, "Google US English");
