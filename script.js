@@ -29,15 +29,25 @@ recognition.onresult = function(event) {
 const userAgent = navigator.userAgent;
 let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
 let isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+const synth = window.speechSynthesis;
+
+function logVoices() {
+    const voices = synth.getVoices();
+    voices.forEach(voice => {
+        console.log(`Name: ${voice.name}, Lang: ${voice.lang}`);
+    });
+}
 function textToSpeech(text) {
     // Determine the browser
 
     if (isChrome) {
         // Use Google's voice in Chrome
         speakWithVoice(text, "Samantha");
+        logVoices();
     } else if (isSafari) {
         // Use Siri's voice in Safari
         speakWithVoice(text, "Samantha"); // Samantha is often the name for Siri's voice in Safari
+        logVoices();
     } else {
         console.error("Unsupported browser");
     }
