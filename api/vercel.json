@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/tts.py": {
-      "runtime": "python3.9"
-    }
-  }
-}
