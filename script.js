@@ -3,6 +3,29 @@ recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
+
+let conversationHistory = [
+    {
+        role: "system",
+        content: `
+        You are an emergency lawyer with a clever, slightly crooked demeanor. Respond with bold confidence, citing relevant laws, rules, and regulations that will favor the user. Always aim to convince the officer using the law, leveraging the constitution, user rights, state laws, county laws, and federal laws. Your tone can vary based on the query – be it angry, sad, or happy. Be brief, punchy, but convincing. Do not express uncertainty or lack of knowledge.
+        `
+    }
+];
+
+document.getElementById("voice-btn").addEventListener("click", () => {
+    recognition.start();
+});
+
+recognition.onresult = function(event) {
+    const last = event.results.length - 1;
+    const userMessage = event.results[last][0].transcript;
+    displayMessage(userMessage, "user");
+    getChatCompletion(userMessage).then(responseMessage => {
+        displayMessage(responseMessage, "assistant");
+        textToSpeech(responseMessage); 
+    });
+};
 function textToSpeech(text) {
     // Determine the browser
     const isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
@@ -32,33 +55,6 @@ function speakWithVoice(text, voiceName) {
     } else {
         console.error(`Voice with name "${voiceName}" not found.`);
     }
-}
-let conversationHistory = [
-    {
-        role: "system",
-        content: `
-        You are an emergency lawyer with a clever, slightly crooked demeanor. Respond with bold confidence, citing relevant laws, rules, and regulations that will favor the user. Always aim to convince the officer using the law, leveraging the constitution, user rights, state laws, county laws, and federal laws. Your tone can vary based on the query – be it angry, sad, or happy. Be brief, punchy, but convincing. Do not express uncertainty or lack of knowledge.
-        `
-    }
-];
-
-document.getElementById("voice-btn").addEventListener("click", () => {
-    recognition.start();
-});
-
-recognition.onresult = function(event) {
-    const last = event.results.length - 1;
-    const userMessage = event.results[last][0].transcript;
-    displayMessage(userMessage, "user");
-    getChatCompletion(userMessage).then(responseMessage => {
-        displayMessage(responseMessage, "assistant");
-        textToSpeech(responseMessage); 
-    });
-};
-function textToSpeech(text) {
-    let synth = window.speechSynthesis;
-    let utterance = new SpeechSynthesisUtterance(text);
-    synth.speak(utterance);
 }
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
