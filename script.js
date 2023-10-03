@@ -4,20 +4,6 @@ recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 const synth = window.speechSynthesis;
 
-function logVoices() {
-    const voices = synth.getVoices();
-    voices.forEach(voice => {
-        console.log(`Name: ${voice.name}, Lang: ${voice.lang}`);
-    });
-}
-
-// This ensures that the voice list is populated before trying to log it
-if (synth.onvoiceschanged !== undefined) {
-    synth.onvoiceschanged = logVoices;
-} else {
-    logVoices();  // Directly log voices if onvoiceschanged is not supported
-}
-
 let conversationHistory = [
     {
         role: "system",
@@ -66,6 +52,7 @@ function speakWithVoice(text, voiceName) {
 
     if (targetVoice) {
         utterance.voice = targetVoice;
+        console.log(`Name: ${voice.name}, Lang: ${targetVoice}`);
         synth.speak(utterance);
     } else {
         console.error(`Voice with name "${voiceName}" not found.`);
