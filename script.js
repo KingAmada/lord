@@ -25,109 +25,11 @@ recognition.onresult = function(event) {
         textToSpeech(responseMessage); 
     });
 };
-async function textToSpeech(text) {
-    const voice_id = "RJO0iuGY1b2uPkmEOIDS";  // Placeholder, replace this with the desired voice ID
-    const model = 'eleven_monolingual_v1';
-    const uri = `wss://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream-input?model_id=${model}`;
-
-    let audioChunks = [];
-
-    const websocket = new WebSocket(uri);
-
-    websocket.onopen = function(event) {
-        // Initialize the connection with initial settings
-        websocket.send(JSON.stringify({
-            "text": " ",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": true
-            },
-            "xi_api_key": "57311814f19ad395d1442578df566233"
-        }));
-
-        // Send the text to be converted to speech
-        websocket.send(JSON.stringify({
-            "text": text + " ",
-            "try_trigger_generation": true
-        }));
-
-        // Send the End of Sequence (EOS) message
-        websocket.send(JSON.stringify({
-            "text": ""
-        }));
-    };
-    
-const CHUNK_BUFFER_SIZE = 3; // Number of chunks to buffer before starting playback
-
-// Convert base64 to ArrayBuffer
-function base64ToArrayBuffer(base64) {
-    const binaryString = window.atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
+function textToSpeech(text) {
+    let synth = window.speechSynthesis;
+    let utterance = new SpeechSynthesisUtterance(text);
+    synth.speak(utterance);
 }
-
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-let sourceNode = null;
-let chunkBuffer = [];
-let isPlaying = false;
-
-const COMBINED_CHUNK_SIZE = 3; // Number of chunks to combine before decoding
-
-function playNextChunk() {
-    if (chunkBuffer.length < COMBINED_CHUNK_SIZE) {
-        isPlaying = false;
-        return;
-    }
-
-    // Combine multiple chunks together
-    const combinedChunks = [];
-    for (let i = 0; i < COMBINED_CHUNK_SIZE; i++) {
-        combinedChunks.push(...new Uint8Array(chunkBuffer.shift()));
-    }
-    const audioBuffer = new Uint8Array(combinedChunks).buffer;
-
-    audioContext.decodeAudioData(audioBuffer, function(buffer) {
-        sourceNode = audioContext.createBufferSource();
-        sourceNode.buffer = buffer;
-        sourceNode.connect(audioContext.destination);
-        sourceNode.onended = playNextChunk;
-        sourceNode.start();
-    }, function(error) {
-        console.error("Error decoding audio data:", error);
-        playNextChunk(); // Skip this chunk and try the next one
-    });
-}
-
-websocket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-
-    if (data.audio) {
-        chunkBuffer.push(base64ToArrayBuffer(data.audio));
-
-        if (!isPlaying && chunkBuffer.length >= CHUNK_BUFFER_SIZE) {
-            isPlaying = true;
-            playNextChunk();
-        }
-    }
-};
-
-    websocket.onerror = function(error) {
-        console.error("WebSocket Error:", error);
-    };
-
-    websocket.onclose = function(event) {
-        if (event.wasClean) {
-            console.log(`Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
-        } else {
-            console.error('Connection died');
-        }
-    };
-}
-
-
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
