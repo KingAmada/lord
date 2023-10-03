@@ -60,7 +60,7 @@ function speakWithVoice(text, voiceName) {
 
     if (targetVoice) {
         utterance.voice = targetVoice;
-        console.log(`Name: ${voice.name}, Lang: ${targetVoice}`);
+        console.log(`Name: ${voices.name}, Lang: ${targetVoice}`);
         synth.speak(utterance);
     } else {
         console.error(`Voice with name "${voiceName}" not found.`);
