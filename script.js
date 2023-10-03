@@ -40,10 +40,12 @@ recognition.onresult = function(event) {
         textToSpeech(responseMessage); 
     });
 };
+const userAgent = navigator.userAgent;
+let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
+let isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
 function textToSpeech(text) {
     // Determine the browser
-    let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
-let isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+
     if (isChrome) {
         // Use Google's voice in Chrome
         speakWithVoice(text, "Google US English");
