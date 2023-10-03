@@ -2,7 +2,6 @@ let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognitio
 recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
-const synth = window.speechSynthesis;
 
 let conversationHistory = [
     {
@@ -29,10 +28,10 @@ recognition.onresult = function(event) {
 const userAgent = navigator.userAgent;
 let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
 let isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
-const synth = window.speechSynthesis;
+const synths = window.speechSynthesis;
 
 function logVoices() {
-    const voices = synth.getVoices();
+    const voices = synths.getVoices();
     voices.forEach(voice => {
         console.log(`Name: ${voice.name}, Lang: ${voice.lang}`);
     });
