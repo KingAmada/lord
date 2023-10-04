@@ -37,11 +37,6 @@ function logVoices() {
     });
 }
 function textToSpeech(text) {
-    // If already speaking, cancel the current speech.
-    if (synth.speaking) {
-        console.warn('SpeechSynthesis is already speaking. Cancelling...');
-        synth.cancel();
-    }
     // Determine the browser
 
     if (isChrome) {
@@ -62,7 +57,11 @@ function speakWithVoice(text, voiceName) {
 
     const voices = synth.getVoices();
     const targetVoice = voices.find(voice => voice.name === voiceName);
-
+ // If already speaking, cancel the current speech.
+    if (synth.speaking) {
+        console.warn('SpeechSynthesis is already speaking. Cancelling...');
+        synth.cancel();
+    }
     if (targetVoice) {
         utterance.voice = targetVoice;
         console.log(`Name: ${voices.name}, Lang: ${targetVoice}`);
