@@ -94,6 +94,18 @@ function displayMessage(message, role) {
 
 function textToSpeech(text) {
     const synth = window.speechSynthesis;
+    
+    // Ensure the voices are loaded by waiting for them
+    if (synth.getVoices().length === 0) {
+        synth.onvoiceschanged = () => {
+            speakText(text, synth);
+        };
+    } else {
+        speakText(text, synth);
+    }
+}
+
+function speakText(text, synth) {
     if (synth.speaking) {
         synth.cancel();
     }
@@ -103,16 +115,27 @@ function textToSpeech(text) {
     const targetVoice = voices.find(voice => voice.name === voiceName);
     
     if (!targetVoice) {
-        console.error(`Voice with name "${voiceName}" not found.`);
+        console.warn(`Desired voice "${voiceName}" not found. Using default voice.`);
+        // Use the default voice
+        const defaultVoice = voices[0];
+        if (!defaultVoice) {
+            console.error("No voices available.");
+            return;
+        }
+        speakUsingVoice(text, defaultVoice, synth);
         return;
     }
 
+    speakUsingVoice(text, targetVoice, synth);
+}
+
+function speakUsingVoice(text, voice, synth) {
     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) return;
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
-        utterance.voice = targetVoice;
+        utterance.voice = voice;
         utterance.onend = () => setTimeout(speakChunk, 30);
         synth.speak(utterance);
         recognition.stop(); 
