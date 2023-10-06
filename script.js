@@ -72,23 +72,43 @@ function textToSpeech(text) {
 }
 
 function speakWithVoice(text, voiceName) {
-   const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
+ const synth = window.speechSynthesis;
 
-    const voices = synth.getVoices();
-    const targetVoice = voices.find(voice => voice.name === voiceName);
- // If already speaking, cancel the current speech.
+    // If already speaking, cancel the current speech.
     if (synth.speaking) {
         console.warn('SpeechSynthesis is already speaking. Cancelling...');
         synth.cancel();
     }
-    if (targetVoice) {
-        utterance.voice = targetVoice;
-        console.log(`Name: ${voices.name}, Lang: ${targetVoice}`);
-        synth.speak(utterance);
-    } else {
+
+    const voices = synth.getVoices();
+    const targetVoice = voices.find(voice => voice.name === voiceName);
+    
+    if (!targetVoice) {
         console.error(`Voice with name "${voiceName}" not found.`);
+        return;
     }
+
+    // Split the text into smaller chunks
+    let chunkLength = 100;  // Adjust this value based on how much your browser can handle
+    let chunks = [];
+    for (let i = 0; i < text.length; i += chunkLength) {
+        chunks.push(text.substring(i, i + chunkLength));
+    }
+
+    let speakChunk = () => {
+        if (chunks.length === 0) return;
+
+        let chunk = chunks.shift();
+        let utterance = new SpeechSynthesisUtterance(chunk);
+        utterance.voice = targetVoice;
+
+        // Set this function as the callback for when this chunk finishes
+        utterance.onend = speakChunk;
+
+        synth.speak(utterance);
+    };
+
+    speakChunk();  // Start speaking the first chunk
     }
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
