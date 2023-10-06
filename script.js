@@ -65,7 +65,9 @@ console.log(userMessage);
       processCommand(userMessage);
       return;
   }
-
+// Activate the system.
+        setActive();
+    
   // If the system isn't active, check for the wake word.
   if (userMessage.toLowerCase().startsWith("hey lord")) {
       setActive();
