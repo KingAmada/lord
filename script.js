@@ -51,6 +51,7 @@ function handleRecognitionResult(event) {
     }
 
     if (userMessage.toLowerCase().startsWith("hey lord")) {
+    document.getElementById("voice-btn").click();
         setActiveMode();
         processCommand(userMessage.replace(/^hey lord[, ]?/i, ''));
     }
