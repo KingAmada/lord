@@ -52,23 +52,29 @@ function textToSpeech(text) {
 }
 
 function speakWithVoice(text, voiceName) {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
+   const synth = window.speechSynthesis;
+    
+    // Split the text into sentences
+    const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+    
+    function speakSentence(index) {
+        if (index >= sentences.length) return;
 
-    const voices = synth.getVoices();
-    const targetVoice = voices.find(voice => voice.name === voiceName);
- // If already speaking, cancel the current speech.
-    if (synth.speaking) {
-        console.warn('SpeechSynthesis is already speaking. Cancelling...');
-        synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(sentences[index]);
+        const voices = synth.getVoices();
+        const targetVoice = voices.find(voice => voice.name === voiceName);
+
+        if (targetVoice) {
+            utterance.voice = targetVoice;
+            utterance.onend = () => speakSentence(index + 1);  // Play the next sentence when the current one ends
+            synth.speak(utterance);
+        } else {
+            console.error(`Voice with name "${voiceName}" not found.`);
+        }
     }
-    if (targetVoice) {
-        utterance.voice = targetVoice;
-        console.log(`Name: ${voices.name}, Lang: ${targetVoice}`);
-        synth.speak(utterance);
-    } else {
-        console.error(`Voice with name "${voiceName}" not found.`);
-    }
+
+    // Start with the first sentence
+    speakSentence(0);
 }
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
