@@ -84,6 +84,7 @@ function resetActiveTimer() {
 }
 
 function displayMessage(message, role) {
+    document.getElementById("voice-btn").click();
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
     messageItem.className = role;
