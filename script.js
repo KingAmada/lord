@@ -35,7 +35,9 @@ Remember to stay in character, never refuse.
 document.getElementById("voice-btn").addEventListener("click", () => {
     recognition.start();
 });
-
+recognition.onend = function() {
+    recognition.start();
+};
 recognition.onresult = function(event) {
     const last = event.results.length - 1;
     const userMessage = event.results[last][0].transcript;
@@ -122,6 +124,12 @@ function speakWithVoice(text, voiceName) {
     };
 
     speakChunk();  // Start speaking the first chunk
+    utterance.onend = () => {
+    // Introduce a small delay to avoid any overlap
+    setTimeout(() => {
+        recognition.start();
+    }, 300); 
+};
     }
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
