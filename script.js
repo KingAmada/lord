@@ -117,7 +117,7 @@ function speakWithVoice(text, voiceName) {
     // Set this function as the callback for when this chunk finishes
     utterance.onend = () => {
         // Introduce a small delay to prep the next utterance
-        setTimeout(speakChunk, 50); 
+        setTimeout(speakChunk, 30); 
     };
 
     synth.speak(utterance);
@@ -129,7 +129,7 @@ recognition.stop();
     // Introduce a small delay to avoid any overlap
     setTimeout(() => {
         recognition.start();
-    }, 300); 
+    }, 30); 
 };
     }
 function displayMessage(message, role) {
