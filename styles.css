@@ -47,6 +47,22 @@ button {
 button:hover {
     background-color: #23A6D5;
 }
+#voice-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#voice-btn:active {
+    transform: scale(0.95);
+}
+
+#voice-btn:hover {
+    opacity: 0.9;
+}
+
 
 li.user, li.assistant {
     padding: 10px;
