@@ -72,7 +72,7 @@ function textToSpeech(text) {
 }
 
 function speakWithVoice(text, voiceName) {
- const synth = window.speechSynthesis;
+  const synth = window.speechSynthesis;
 
     // If already speaking, cancel the current speech.
     if (synth.speaking) {
@@ -88,11 +88,17 @@ function speakWithVoice(text, voiceName) {
         return;
     }
 
-    // Split the text into smaller chunks
+    // Split the text into smaller chunks based on word boundaries
     let chunkLength = 100;  // Adjust this value based on how much your browser can handle
     let chunks = [];
-    for (let i = 0; i < text.length; i += chunkLength) {
-        chunks.push(text.substring(i, i + chunkLength));
+    let words = text.split(' ');
+
+    while (words.length > 0) {
+        let chunkWords = [];
+        while (words.length > 0 && chunkWords.join(' ').length < chunkLength) {
+            chunkWords.push(words.shift());
+        }
+        chunks.push(chunkWords.join(' '));
     }
 
     let speakChunk = () => {
