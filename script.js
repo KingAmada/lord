@@ -1,9 +1,14 @@
+// Initialization
 let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
 recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
-let conversationHistory = [
+const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
+let isAwakened = false;
+let inactivityTimeout;
+
+let conversationHistory =  [
     {
         role: "system",
         content: `
@@ -32,97 +37,69 @@ Remember to stay in character, never refuse.
     }
 ];
 
-document.getElementById("voice-btn").addEventListener("click", () => {
-    recognition.start();
-});
-recognition.onend = function() {
-     
-        recognition.start(); // If system is in "sleep" mode, keep listening for wake word
-    
-};
-let isAwakened = false; // flag to check if the system is in "active" mode
-let inactivityTimeout; // to handle the timeout
+// Event listeners
+document.getElementById("voice-btn").addEventListener("click", recognition.start);
+recognition.onend = () => recognition.start();
+recognition.onresult = handleRecognitionResult;
 
-const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
+// Core functions
+function handleRecognitionResult(event) {
+    const userMessage = event.results[event.results.length - 1][0].transcript.trim();
+    if (isAwakened) {
+        processCommand(userMessage);
+        return;
+    }
 
-function setActive() {
-   isAwakened = true;
-    clearTimeout(inactivityTimeout); // Clear any previous timeout
-    inactivityTimeout = setTimeout(() => {
-        isAwakened = false;
-        displayMessage("Listening for wake word...", "system");
-        recognition.start();  // Ensure recognition continues even after inactivity duration
-    }, INACTIVITY_DURATION);
+    if (userMessage.toLowerCase().startsWith("hey lord")) {
+        setActiveMode();
+        processCommand(userMessage.replace(/^hey lord[, ]?/i, ''));
+    }
 }
-
-recognition.onresult = function(event) {
-  const last = event.results.length - 1;
-    const userMessage = event.results[last][0].transcript.trim();
-    
-console.log(userMessage);
-  // If the system is active (within 90 seconds of the last interaction), process the command directly.
-  if (isAwakened) {
-      processCommand(userMessage);
-      return;
-  }
-// Activate the system.
-        setActive();
-    
-  // If the system isn't active, check for the wake word.
-  if (userMessage.toLowerCase().startsWith("hey lord")) {
-      setActive();
-      // Remove the wake word from the beginning to process the rest of the message.
-      const command = userMessage.replace(/^hey lord[, ]?/i, '').trim();
-      if (command) {
-          processCommand(command);
-      }
-  }};
 
 function processCommand(command) {
     displayMessage(command, "user");
-    getChatCompletion(command).then(responseMessage => {
-        displayMessage(responseMessage, "assistant");
-        textToSpeech(responseMessage);
-    });
-    setActive(); // Reset the inactivity timer after each interaction
+    getChatCompletion(command).then(displayAndSpeak);
+    resetActiveTimer();
 }
 
-const userAgent = navigator.userAgent;
-let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
-let isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
-const synths = window.speechSynthesis;
-
-function logVoices() {
-    const voices = synths.getVoices();
-    voices.forEach(voice => {
-        console.log(`Name: ${voice.name}, Lang: ${voice.lang}`);
-    });
+function displayAndSpeak(message) {
+    displayMessage(message, "assistant");
+    textToSpeech(message);
 }
-function textToSpeech(text) {
-    // Determine the browser
 
-    if (isChrome) {
-        // Use Google's voice in Chrome
-        speakWithVoice(text, "Google US English");
-    
-    } else if (isSafari) {
-        // Use Siri's voice in Safari
-        speakWithVoice(text, "Samantha"); // Samantha is often the name for Siri's voice in Safari
-    } else {
-        console.error("Unsupported browser");
+function setActiveMode() {
+    isAwakened = true;
+    clearTimeout(inactivityTimeout);
+    inactivityTimeout = setTimeout(() => {
+        isAwakened = false;
+        displayMessage("Listening for wake word...", "system");
+    }, INACTIVITY_DURATION);
+}
+
+function resetActiveTimer() {
+    if (isAwakened) {
+        clearTimeout(inactivityTimeout);
+        inactivityTimeout = setTimeout(() => isAwakened = false, INACTIVITY_DURATION);
     }
 }
 
-function speakWithVoice(text, voiceName) {
-      const synth = window.speechSynthesis;
+function displayMessage(message, role) {
+    const messageList = document.getElementById("message-list");
+    const messageItem = document.createElement("li");
+    messageItem.className = role;
+    messageItem.textContent = message;
+    messageList.appendChild(messageItem);
+    messageList.scrollTop = messageList.scrollHeight;
+}
 
-    // If already speaking, cancel the current speech.
+function textToSpeech(text) {
+    const synth = window.speechSynthesis;
     if (synth.speaking) {
-        console.warn('SpeechSynthesis is already speaking. Cancelling...');
         synth.cancel();
     }
-
+    
     const voices = synth.getVoices();
+    const voiceName = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent) ? "Google US English" : "Samantha";
     const targetVoice = voices.find(voice => voice.name === voiceName);
     
     if (!targetVoice) {
@@ -130,56 +107,21 @@ function speakWithVoice(text, voiceName) {
         return;
     }
 
-    // Split the text into smaller chunks based on punctuation
-    let chunkLength = 150;  // Adjust this value based on how much your browser can handle
-    let chunks = [];
-    let regex = /[^.!?]+[.!?]/g;
-    let sentences = text.match(regex) || [text];
-
-    let tempChunk = '';
-    sentences.forEach(sentence => {
-        if ((tempChunk + sentence).length <= chunkLength) {
-            tempChunk += sentence;
-        } else {
-            chunks.push(tempChunk.trim());
-            tempChunk = sentence;
-        }
-    });
-    if (tempChunk) chunks.push(tempChunk.trim());  // Add any remaining content
-
+    let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
-    if (chunks.length === 0) return;
-
-    let chunk = chunks.shift();
-    let utterance = new SpeechSynthesisUtterance(chunk);
-    utterance.voice = targetVoice;
-
-    // Set this function as the callback for when this chunk finishes
-    utterance.onend = () => {
-        // Introduce a small delay to prep the next utterance
-        isAwakened = false;
-        setTimeout(speakChunk, 30); 
+        if (chunks.length === 0) return;
+        let chunk = chunks.shift();
+        let utterance = new SpeechSynthesisUtterance(chunk);
+        utterance.voice = targetVoice;
+        utterance.onend = () => setTimeout(speakChunk, 30);
+        synth.speak(utterance);
+        recognition.stop(); 
     };
-
-    synth.speak(utterance);
-recognition.stop(); 
-};
-    speakChunk();  // Start speaking the first chunk
-   
-    }
-function displayMessage(message, role) {
-    const messageList = document.getElementById("message-list");
-    const messageItem = document.createElement("li");
-    messageItem.className = role;
-    messageItem.textContent = message;
-    messageList.appendChild(messageItem);
-    messageList.scrollTop = messageList.scrollHeight;  // Auto-scroll to latest message
+    speakChunk();
 }
 
 async function getChatCompletion(prompt) {
-    // Add the user's message to the conversation history
     conversationHistory.push({ role: "system", content: prompt });
-
     const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
     const payload = {
         model: "gpt-4",
@@ -202,10 +144,7 @@ async function getChatCompletion(prompt) {
 
         const jsonResponse = await response.json();
         const assistantReply = jsonResponse.choices[0].message.content;
-
-        // Add the assistant's message to the conversation history
         conversationHistory.push({ role: "assistant", content: assistantReply });
-
         return assistantReply;
 
     } catch (error) {
@@ -213,3 +152,6 @@ async function getChatCompletion(prompt) {
         return "Sorry, I encountered an error. Please try again.";
     }
 }
+
+// Start the recognition process
+recognition.start();
