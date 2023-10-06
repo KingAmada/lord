@@ -38,26 +38,48 @@ document.getElementById("voice-btn").addEventListener("click", () => {
 recognition.onend = function() {
     recognition.start();
 };
-let isAwakened = false;
+let isAwakened = false; // flag to check if the system is in "active" mode
+let inactivityTimeout; // to handle the timeout
+
+const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
+
+function setActive() {
+    isAwakened = true;
+    clearTimeout(inactivityTimeout); // Clear any previous timeout
+    inactivityTimeout = setTimeout(() => {
+        isAwakened = false;
+        displayMessage("Listening for wake word...", "system");
+    }, INACTIVITY_DURATION);
+}
+
 recognition.onresult = function(event) {
-   const last = event.results.length - 1;
+  const last = event.results.length - 1;
     const userMessage = event.results[last][0].transcript.trim();
 
-    // If the wake word is detected
     if (!isAwakened && userMessage.toLowerCase().startsWith("hey lord")) {
-        isAwakened = true;
-        displayMessage("Wake word detected. Listening...", "system");
+        setActive();
+        // Remove the wake word from the beginning to process the rest of the message
+        const command = userMessage.replace(/^hey lord[, ]?/i, '').trim();
+        if (command) {
+            processCommand(command);
+        }
         return;
     }
 
     if (isAwakened) {
-        displayMessage(userMessage, "user");
-        getChatCompletion(userMessage).then(responseMessage => {
-            displayMessage(responseMessage, "assistant");
-            textToSpeech(responseMessage);
-        });
+        processCommand(userMessage);
     }
 };
+
+function processCommand(command) {
+    displayMessage(command, "user");
+    getChatCompletion(command).then(responseMessage => {
+        displayMessage(responseMessage, "assistant");
+        textToSpeech(responseMessage);
+    });
+    setActive(); // Reset the inactivity timer after each interaction
+}
+
 const userAgent = navigator.userAgent;
 let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
 let isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
