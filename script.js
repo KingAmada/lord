@@ -106,16 +106,19 @@ function speakWithVoice(text, voiceName) {
     if (tempChunk) chunks.push(tempChunk.trim());  // Add any remaining content
 
     let speakChunk = () => {
-        if (chunks.length === 0) return;
+    if (chunks.length === 0) return;
 
-        let chunk = chunks.shift();
-        let utterance = new SpeechSynthesisUtterance(chunk);
-        utterance.voice = targetVoice;
+    let chunk = chunks.shift();
+    let utterance = new SpeechSynthesisUtterance(chunk);
+    utterance.voice = targetVoice;
 
-        // Set this function as the callback for when this chunk finishes
-        utterance.onend = speakChunk;
+    // Set this function as the callback for when this chunk finishes
+    utterance.onend = () => {
+        // Introduce a small delay to prep the next utterance
+        setTimeout(speakChunk, 50); 
+    };
 
-        synth.speak(utterance);
+    synth.speak(utterance);
     };
 
     speakChunk();  // Start speaking the first chunk
