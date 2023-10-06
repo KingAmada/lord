@@ -55,7 +55,7 @@ function setActive() {
 recognition.onresult = function(event) {
   const last = event.results.length - 1;
     const userMessage = event.results[last][0].transcript.trim();
-
+console.log(userMessage);
     if (!isAwakened && userMessage.toLowerCase().startsWith("hey lord")) {
         setActive();
         // Remove the wake word from the beginning to process the rest of the message
