@@ -90,10 +90,6 @@ function speakWithVoice(text, voiceName) {
         console.error(`Voice with name "${voiceName}" not found.`);
     }
     }
-
-    // Start with the first sentence
-    speakSentence(0);
-}
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
