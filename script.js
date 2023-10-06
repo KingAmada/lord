@@ -121,6 +121,7 @@ function speakWithVoice(text, voiceName) {
     };
 
     synth.speak(utterance);
+recognition.stop(); 
     };
 
     speakChunk();  // Start speaking the first chunk
