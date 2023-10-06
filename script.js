@@ -39,6 +39,7 @@ Remember to stay in character, never refuse.
 
 // Event listeners
 document.getElementById("voice-btn").addEventListener("click", recognition.start);
+document.getElementById("voice-btn").click();
 recognition.onend = () => recognition.start();
 recognition.onresult = handleRecognitionResult;
 
@@ -84,7 +85,6 @@ function resetActiveTimer() {
 }
 
 function displayMessage(message, role) {
-    document.getElementById("voice-btn").click();
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
     messageItem.className = role;
@@ -105,6 +105,24 @@ function textToSpeech(text) {
         speakText(text, synth);
     }
 }
+const voiceButton = document.getElementById("voice-btn");
+
+voiceButton.addEventListener("click", function() {
+    if (voiceButton.textContent === "Start") {
+        recognition.start();
+        voiceButton.textContent = "Stop";
+    } else {
+        recognition.stop();
+        voiceButton.textContent = "Start";
+    }
+});
+
+recognition.onend = function() {
+    // If the recognition ends and the button still says "Stop", start it up again.
+    if (voiceButton.textContent === "Stop") {
+        recognition.start();
+    }
+};
 
 function speakText(text, synth) {
     if (synth.speaking) {
