@@ -38,14 +38,25 @@ document.getElementById("voice-btn").addEventListener("click", () => {
 recognition.onend = function() {
     recognition.start();
 };
+let isAwakened = false;
 recognition.onresult = function(event) {
-    const last = event.results.length - 1;
-    const userMessage = event.results[last][0].transcript;
-    displayMessage(userMessage, "user");
-    getChatCompletion(userMessage).then(responseMessage => {
-        displayMessage(responseMessage, "assistant");
-        textToSpeech(responseMessage); 
-    });
+   const last = event.results.length - 1;
+    const userMessage = event.results[last][0].transcript.trim();
+
+    // If the wake word is detected
+    if (!isAwakened && userMessage.toLowerCase().startsWith("hey lord")) {
+        isAwakened = true;
+        displayMessage("Wake word detected. Listening...", "system");
+        return;
+    }
+
+    if (isAwakened) {
+        displayMessage(userMessage, "user");
+        getChatCompletion(userMessage).then(responseMessage => {
+            displayMessage(responseMessage, "assistant");
+            textToSpeech(responseMessage);
+        });
+    }
 };
 const userAgent = navigator.userAgent;
 let isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
@@ -117,6 +128,7 @@ function speakWithVoice(text, voiceName) {
     // Set this function as the callback for when this chunk finishes
     utterance.onend = () => {
         // Introduce a small delay to prep the next utterance
+        isAwakened = false;
         setTimeout(speakChunk, 30); 
     };
 
