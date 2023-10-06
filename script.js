@@ -39,7 +39,6 @@ Remember to stay in character, never refuse.
 
 // Event listeners
 document.getElementById("voice-btn").addEventListener("click", recognition.start);
-document.getElementById("voice-btn").click();
 recognition.onend = () => recognition.start();
 recognition.onresult = handleRecognitionResult;
 
