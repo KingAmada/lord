@@ -36,7 +36,9 @@ document.getElementById("voice-btn").addEventListener("click", () => {
     recognition.start();
 });
 recognition.onend = function() {
-    recognition.start();
+      if (!isAwakened) {
+        recognition.start(); // If system is in "sleep" mode, keep listening for wake word
+    }
 };
 let isAwakened = false; // flag to check if the system is in "active" mode
 let inactivityTimeout; // to handle the timeout
@@ -44,11 +46,12 @@ let inactivityTimeout; // to handle the timeout
 const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
 
 function setActive() {
-    isAwakened = true;
+   isAwakened = true;
     clearTimeout(inactivityTimeout); // Clear any previous timeout
     inactivityTimeout = setTimeout(() => {
         isAwakened = false;
         displayMessage("Listening for wake word...", "system");
+        recognition.start(); // Restart recognition once it goes back to "sleep" mode
     }, INACTIVITY_DURATION);
 }
 
