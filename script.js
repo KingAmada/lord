@@ -122,15 +122,9 @@ function speakWithVoice(text, voiceName) {
 
     synth.speak(utterance);
 recognition.stop(); 
-    };
-
-    speakChunk();  // Start speaking the first chunk
-    utterance.onend = () => {
-    // Introduce a small delay to avoid any overlap
-    setTimeout(() => {
-        recognition.start();
-    }, 30); 
 };
+    speakChunk();  // Start speaking the first chunk
+   
     }
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
