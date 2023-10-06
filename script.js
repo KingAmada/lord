@@ -58,21 +58,23 @@ function setActive() {
 recognition.onresult = function(event) {
   const last = event.results.length - 1;
     const userMessage = event.results[last][0].transcript.trim();
+    
 console.log(userMessage);
-    if (!isAwakened && userMessage.toLowerCase().startsWith("hey lord")) {
-        setActive();
-        // Remove the wake word from the beginning to process the rest of the message
-        const command = userMessage.replace(/^hey lord[, ]?/i, '').trim();
-        if (command) {
-            processCommand(command);
-        }
-        return;
-    }
+  // If the system is active (within 90 seconds of the last interaction), process the command directly.
+  if (isAwakened) {
+      processCommand(userMessage);
+      return;
+  }
 
-    if (isAwakened) {
-        processCommand(userMessage);
-    }
-};
+  // If the system isn't active, check for the wake word.
+  if (userMessage.toLowerCase().startsWith("hey lord")) {
+      setActive();
+      // Remove the wake word from the beginning to process the rest of the message.
+      const command = userMessage.replace(/^hey lord[, ]?/i, '').trim();
+      if (command) {
+          processCommand(command);
+      }
+  }};
 
 function processCommand(command) {
     displayMessage(command, "user");
