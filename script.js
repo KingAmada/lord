@@ -72,7 +72,7 @@ function textToSpeech(text) {
 }
 
 function speakWithVoice(text, voiceName) {
-  const synth = window.speechSynthesis;
+      const synth = window.speechSynthesis;
 
     // If already speaking, cancel the current speech.
     if (synth.speaking) {
@@ -88,18 +88,22 @@ function speakWithVoice(text, voiceName) {
         return;
     }
 
-    // Split the text into smaller chunks based on word boundaries
-    let chunkLength = 100;  // Adjust this value based on how much your browser can handle
+    // Split the text into smaller chunks based on punctuation
+    let chunkLength = 150;  // Adjust this value based on how much your browser can handle
     let chunks = [];
-    let words = text.split(' ');
+    let regex = /[^.!?]+[.!?]/g;
+    let sentences = text.match(regex) || [text];
 
-    while (words.length > 0) {
-        let chunkWords = [];
-        while (words.length > 0 && chunkWords.join(' ').length < chunkLength) {
-            chunkWords.push(words.shift());
+    let tempChunk = '';
+    sentences.forEach(sentence => {
+        if ((tempChunk + sentence).length <= chunkLength) {
+            tempChunk += sentence;
+        } else {
+            chunks.push(tempChunk.trim());
+            tempChunk = sentence;
         }
-        chunks.push(chunkWords.join(' '));
-    }
+    });
+    if (tempChunk) chunks.push(tempChunk.trim());  // Add any remaining content
 
     let speakChunk = () => {
         if (chunks.length === 0) return;
