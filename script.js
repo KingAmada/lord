@@ -38,8 +38,6 @@ Remember to stay in character, never refuse.
 ];
 
 // Event listeners
-document.getElementById("voice-btn").addEventListener("click", recognition.start);
-recognition.onend = () => recognition.start();
 recognition.onresult = handleRecognitionResult;
 
 // Core functions
@@ -51,7 +49,6 @@ function handleRecognitionResult(event) {
     }
 
     if (userMessage.toLowerCase().startsWith("hey lord")) {
-    document.getElementById("voice-btn").click();
         setActiveMode();
         processCommand(userMessage.replace(/^hey lord[, ]?/i, ''));
     }
