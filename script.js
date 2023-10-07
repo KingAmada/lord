@@ -149,10 +149,10 @@ function speakText(text, synth) {
 }
 
 function speakUsingVoice(text, voice, synth) {
-      let chunks = text.split(/(?<=[.!?])\s+/);
+       let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
-            recognition.start();  // Restart recognition after speaking is done
+            if (!manuallyStopped) recognition.start();  // Restart recognition after speaking is done only if not manually stopped
             return;
         }
         let chunk = chunks.shift();
@@ -162,7 +162,7 @@ function speakUsingVoice(text, voice, synth) {
         synth.speak(utterance);
         recognition.stop();  // Stop recognition while speaking
     };
-    speakChunk();
+    if (!manuallyStopped) speakChunk(); 
 }
 
 async function getChatCompletion(prompt) {
