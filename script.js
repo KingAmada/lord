@@ -146,15 +146,18 @@ function speakText(text, synth) {
 }
 
 function speakUsingVoice(text, voice, synth) {
-    let chunks = text.split(/(?<=[.!?])\s+/);
+     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
-        if (chunks.length === 0) return;
+        if (chunks.length === 0) {
+            recognition.start(); // Resume voice recognition after speaking
+            return;
+        }
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
         utterance.onend = () => setTimeout(speakChunk, 30);
         synth.speak(utterance);
-        recognition.stop(); 
+        recognition.stop(); // Stop voice recognition while speaking
     };
     speakChunk();
 }
