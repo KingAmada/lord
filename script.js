@@ -116,7 +116,7 @@ voiceButton.addEventListener("click", function() {
 
 recognition.onend = function() {
     // If the recognition ends and the button still says "Stop", start it up again.
-    if (voiceButton.textContent === "Stop") {
+     if (voiceButton.textContent === "Stop" && !synth.speaking) {
         recognition.start();
     }
 };
@@ -146,10 +146,10 @@ function speakText(text, synth) {
 }
 
 function speakUsingVoice(text, voice, synth) {
-     let chunks = text.split(/(?<=[.!?])\s+/);
+      let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
-            recognition.start(); // Resume voice recognition after speaking
+            recognition.start();  // Restart recognition after speaking is done
             return;
         }
         let chunk = chunks.shift();
@@ -157,7 +157,7 @@ function speakUsingVoice(text, voice, synth) {
         utterance.voice = voice;
         utterance.onend = () => setTimeout(speakChunk, 30);
         synth.speak(utterance);
-        recognition.stop(); // Stop voice recognition while speaking
+        recognition.stop();  // Stop recognition while speaking
     };
     speakChunk();
 }
