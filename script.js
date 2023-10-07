@@ -41,18 +41,33 @@ Remember to stay in character, never refuse.
 
 // Event listeners
 recognition.onresult = handleRecognitionResult;
+const WAKE_UP_PHRASES = ["Lord", "attention lord", "listen up lord", "lord help","Hey Lord", "Please Lord", "Help me lord", "help"];
 
 // Core functions
+function startsWithWakeUpPhrase(message) {
+    return WAKE_UP_PHRASES.some(phrase => message.toLowerCase().startsWith(phrase));
+}
+
 function handleRecognitionResult(event) {
     const userMessage = event.results[event.results.length - 1][0].transcript.trim();
+    
     if (isAwakened) {
         processCommand(userMessage);
         return;
     }
 
-    if (userMessage.toLowerCase().startsWith("hey lord")) {
+    if (startsWithWakeUpPhrase(userMessage)) {
         setActiveMode();
-        processCommand(userMessage.replace(/^hey lord[, ]?/i, ''));
+        
+        // Remove the wake-up phrase from the user's message before processing
+        let command = userMessage;
+        WAKE_UP_PHRASES.forEach(phrase => {
+            if (command.toLowerCase().startsWith(phrase)) {
+                command = command.replace(new RegExp(`^${phrase}[, ]?`, 'i'), '');
+            }
+        });
+        
+        processCommand(command);
     }
 }
 
