@@ -1,6 +1,7 @@
 // Initialization
 let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
 let synth = window.speechSynthesis;
+let manuallyStopped = false;
 recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
@@ -106,9 +107,11 @@ const voiceButton = document.getElementById("voice-btn");
 
 voiceButton.addEventListener("click", function() {
     if (voiceButton.textContent === "Start") {
+        manuallyStopped = false;
         recognition.start();
         voiceButton.textContent = "Stop";
     } else {
+        manuallyStopped = true;
         recognition.stop();
         voiceButton.textContent = "Start";
     }
@@ -116,7 +119,7 @@ voiceButton.addEventListener("click", function() {
 
 recognition.onend = function() {
     // If the recognition ends and the button still says "Stop", start it up again.
-     if (voiceButton.textContent === "Stop" && !synth.speaking) {
+      if (voiceButton.textContent === "Stop" && !synth.speaking && !manuallyStopped) {
         recognition.start();
     }
 };
