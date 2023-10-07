@@ -1,5 +1,6 @@
 // Initialization
 let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+let synth = window.speechSynthesis;
 recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
@@ -91,7 +92,6 @@ function displayMessage(message, role) {
 }
 
 function textToSpeech(text) {
-    const synth = window.speechSynthesis;
     
     // Ensure the voices are loaded by waiting for them
     if (synth.getVoices().length === 0) {
