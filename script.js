@@ -179,12 +179,19 @@ function speakUsingVoice(text, voice, synth) {
     };
     if (!manuallyStopped) speakChunk(); 
 }
+const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
 
-async function getChatCompletion(prompt) {
+async function getChatCompletion(prompt, modelIndex = 0) {
+    if (modelIndex >= MODEL_PRIORITY.length) {
+        console.error("All models exhausted.");
+        return "Sorry, I encountered multiple errors. Please try again later.";
+    }
+
+    const currentModel = MODEL_PRIORITY[modelIndex];
     conversationHistory.push({ role: "system", content: prompt });
     const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
     const payload = {
-        model: "gpt-4",
+        model: currentModel,
         messages: conversationHistory
     };
 
@@ -198,8 +205,7 @@ async function getChatCompletion(prompt) {
         });
 
         if (!response.ok) {
-            const errorData = await response.text();
-            throw new Error(`API Error: ${errorData}`);
+            throw new Error("API Error");
         }
 
         const jsonResponse = await response.json();
@@ -208,8 +214,8 @@ async function getChatCompletion(prompt) {
         return assistantReply;
 
     } catch (error) {
-        console.error("Error fetching completion:", error);
-        return "Sorry, I encountered an error. Please try again.";
+        console.warn(`Error using model ${currentModel}. Trying next model.`);
+        return await getChatCompletion(prompt, modelIndex + 1);
     }
 }
 
