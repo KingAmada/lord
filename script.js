@@ -70,13 +70,13 @@ function handleRecognitionResult(event) {
         processCommand(command);
     }
 }
-const MAX_HISTORY_LENGTH = 3;
+//const MAX_HISTORY_LENGTH = 3;
 function processCommand(command) {
     displayMessage(command, "user");
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
      if (conversationHistory.length > MAX_HISTORY_LENGTH) {
-        conversationHistory.shift();
+       // conversationHistory.shift();
     }
 }
 
