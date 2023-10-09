@@ -67,6 +67,7 @@ function handleRecognitionResult(event) {
             } else if (startsWithWakeUpPhrase(userMessage)) {
                 setActiveMode();
                 voiceButton.textContent = "Stop";
+                 document.getElementById("listeningIndicator").classList.add("listening");
                 // Remove the wake-up phrase from the user's message before processing
                 let command = userMessage;
                 WAKE_UP_PHRASES.forEach(phrase => {
@@ -113,6 +114,8 @@ function resetActiveTimer() {
         clearTimeout(inactivityTimeout);
         inactivityTimeout = setTimeout(() => isAwakened = false, INACTIVITY_DURATION);
     }
+    document.getElementById("listeningIndicator").classList.remove("listening");
+
 }
 
 function displayMessage(message, role) {
