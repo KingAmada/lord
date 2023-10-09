@@ -15,25 +15,31 @@ body {
     max-width: 400px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-height: 640px; /* Standard height for many mobile devices. Adjust as needed. */
+    overflow-y: auto;  /* Enables scrolling when content overflows. */
 }
 
 /* ... previous CSS ... */
+
 
 #message-list li {
     padding: 10px 15px;
     margin-bottom: 10px;
     border-radius: 10px;
     max-width: 80%;
+    font-size: 0.9rem;
 }
 
 #message-list .user {
     background-color: #e0e0e0;
     align-self: flex-end;
     order: 2;
+    color: #333;  /* Text color for user messages. */
 }
 
 #message-list .assistant {
     background-color: #74ebd5;
+    color: #fff;  /* Text color for assistant messages. */
 }
 
 #message-list .system {
@@ -41,7 +47,6 @@ body {
     color: #666;
     text-align: center;
 }
-
 @keyframes ripple {
     0% {
         background-size: 100% 100%;
