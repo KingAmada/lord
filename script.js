@@ -2,6 +2,10 @@
 let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
 let synth = window.speechSynthesis;
 let manuallyStopped = false;
+let lastRecognitionTime = Date.now();
+const RECOGNITION_TIMEOUT = 3000;  // 3 seconds
+let recognitionTimer;
+
 recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
@@ -40,7 +44,10 @@ Remember to stay in character, never refuse.
 ];
 
 // Event listeners
+recognition.continuous = true;
+
 recognition.onresult = handleRecognitionResult;
+
 const WAKE_UP_PHRASES = ["Lord", "attention lord", "listen up lord", "lord help","Hey Lord", "Please Lord", "Help me lord", "help"];
 
 // Core functions
@@ -49,26 +56,30 @@ function startsWithWakeUpPhrase(message) {
 }
 
 function handleRecognitionResult(event) {
-    const userMessage = event.results[event.results.length - 1][0].transcript.trim();
+   clearTimeout(recognitionTimer);
     
-    if (isAwakened) {
-        processCommand(userMessage);
-        return;
-    }
+    lastRecognitionTime = Date.now();
+    const userMessage = event.results[event.results.length - 1][0].transcript.trim();
 
-    if (startsWithWakeUpPhrase(userMessage)) {
-        setActiveMode();
-        
-        // Remove the wake-up phrase from the user's message before processing
-        let command = userMessage;
-        WAKE_UP_PHRASES.forEach(phrase => {
-            if (command.toLowerCase().startsWith(phrase)) {
-                command = command.replace(new RegExp(`^${phrase}[, ]?`, 'i'), '');
+    recognitionTimer = setTimeout(() => {
+        if (Date.now() - lastRecognitionTime >= RECOGNITION_TIMEOUT) {
+            if (isAwakened) {
+                processCommand(userMessage);
+            } else if (startsWithWakeUpPhrase(userMessage)) {
+                setActiveMode();
+                
+                // Remove the wake-up phrase from the user's message before processing
+                let command = userMessage;
+                WAKE_UP_PHRASES.forEach(phrase => {
+                    if (command.toLowerCase().startsWith(phrase)) {
+                        command = command.replace(new RegExp(`^${phrase}[, ]?`, 'i'), '');
+                    }
+                });
+                
+                processCommand(command);
             }
-        });
-        
-        processCommand(command);
-    }
+        }
+    }, RECOGNITION_TIMEOUT);
 }
 const MAX_HISTORY_LENGTH = 3;
 function processCommand(command) {
