@@ -60,14 +60,15 @@ function handleRecognitionResult(event) {
     lastRecognitionTime = Date.now();
     const userMessage = event.results[event.results.length - 1][0].transcript.trim();
 
-    recognitionTimer = setTimeout(() => {
+     recognitionTimer = setTimeout(() => {
         if (Date.now() - lastRecognitionTime >= RECOGNITION_TIMEOUT) {
             if (isAwakened) {
                 processCommand(userMessage);
             } else if (startsWithWakeUpPhrase(userMessage)) {
                 setActiveMode();
                 voiceButton.textContent = "Stop";
-                 document.getElementById("listeningIndicator").classList.add("listening");
+                document.getElementById("listeningIndicator").classList.add("listening");  // Add ripple effect
+                
                 // Remove the wake-up phrase from the user's message before processing
                 let command = userMessage;
                 WAKE_UP_PHRASES.forEach(phrase => {
@@ -99,6 +100,7 @@ function displayAndSpeak(message) {
 function setActiveMode() {
     isAwakened = true;
      // Add the listening indicator
+    document.getElementById("listeningIndicator").classList.add("listening");  // Add ripple effect
     document.getElementById("listeningIndicator").style.backgroundColor = "red";
     clearTimeout(inactivityTimeout);
     inactivityTimeout = setTimeout(() => {
@@ -110,12 +112,13 @@ function setActiveMode() {
 }
 
 function resetActiveTimer() {
-    if (isAwakened) {
+     if (isAwakened) {
         clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => isAwakened = false, INACTIVITY_DURATION);
+        inactivityTimeout = setTimeout(() => {
+            isAwakened = false;
+            document.getElementById("listeningIndicator").classList.remove("listening");  // Remove ripple effect
+        }, INACTIVITY_DURATION);
     }
-    document.getElementById("listeningIndicator").classList.remove("listening");
-
 }
 
 function displayMessage(message, role) {
@@ -146,6 +149,7 @@ voiceButton.addEventListener("click", function() {
         recognition.start();
         voiceButton.textContent = "Stop";
         // Add the listening indicator (e.g., changing the color of a dot)
+         document.getElementById("listeningIndicator").classList.remove("listening");  // Remove ripple effect
         document.getElementById("listeningIndicator").style.backgroundColor = "red";
   
     } else {
@@ -153,6 +157,7 @@ voiceButton.addEventListener("click", function() {
         recognition.stop();
         voiceButton.textContent = "Start";
          // Remove the listening indicator
+        document.getElementById("listeningIndicator").classList.add("listening");  // Add ripple effect
         document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
   
     }
