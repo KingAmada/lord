@@ -1,93 +1,54 @@
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(-45deg, #23A6D5, #23D5AB, #FFD700, #FF6347);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    background: linear-gradient(to right, #74ebd5, #acb6e5);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-@keyframes gradientBG {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+.chat-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #message-list {
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.8);
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+    overflow-y: scroll;
+    max-height: 400px;
 }
 
-#input-area {
+.controls {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
 }
 
-button {
-    padding: 10px 15px;
+.mic-btn {
+    background-color: transparent;
     border: none;
-    border-radius: 10px;
-    background-color: #23D5AB;
-    color: white;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    outline: none;
+    margin-right: 10px;
 }
 
-button:hover {
-    background-color: #23A6D5;
-}
-#voice-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.icon {
+    width: 30px;
+    height: 30px;
+    color: #333;
 }
 
-#voice-btn:active {
-    transform: scale(0.95);
+.listening-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: transparent;
 }
 
-#voice-btn:hover {
-    opacity: 0.9;
-}
-
-
-li.user, li.assistant {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    animation: fadeIn 0.5s ease;
-}
-
-li.user {
-    background-color: #EFEFEF;
-    align-self: flex-end;
-}
-
-li.assistant {
-    background-color: #23D5AB;
-    color: white;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
