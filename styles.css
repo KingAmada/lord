@@ -17,12 +17,45 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#message-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0 0 10px 0;
-    overflow-y: scroll;
-    max-height: 400px;
+/* ... previous CSS ... */
+
+#message-list li {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+}
+
+#message-list .user {
+    background-color: #e0e0e0;
+    align-self: flex-end;
+    order: 2;
+}
+
+#message-list .assistant {
+    background-color: #74ebd5;
+}
+
+#message-list .system {
+    font-style: italic;
+    color: #666;
+    text-align: center;
+}
+
+@keyframes ripple {
+    0% {
+        background-size: 100% 100%;
+    }
+    50% {
+        background-size: 110% 110%;
+    }
+    100% {
+        background-size: 100% 100%;
+    }
+}
+
+.listening-indicator.listening {
+    animation: ripple 1s infinite;
 }
 
 .controls {
