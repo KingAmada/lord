@@ -210,6 +210,8 @@ async function getChatCompletion(prompt, modelIndex = 0) {
     };
 
     try {
+        console.log("Sending request with payload:", JSON.stringify(payload)); // Log the request payload
+        
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
