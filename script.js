@@ -81,13 +81,13 @@ function handleRecognitionResult(event) {
         }
     }, RECOGNITION_TIMEOUT);
 }
-const MAX_HISTORY_LENGTH = 3;
+const MAX_HISTORY_LENGTH = 4;
 function processCommand(command) {
     displayMessage(command, "user");
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
      if (conversationHistory.length > MAX_HISTORY_LENGTH) {
-        //conversationHistory.shift();
+        conversationHistory.splice(1, 1);
     }
 }
 
