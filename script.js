@@ -67,7 +67,7 @@ function handleRecognitionResult(event) {
                 processCommand(userMessage);
             } else if (startsWithWakeUpPhrase(userMessage)) {
                 setActiveMode();
-                
+                voiceButton.textContent = "Stop";
                 // Remove the wake-up phrase from the user's message before processing
                 let command = userMessage;
                 WAKE_UP_PHRASES.forEach(phrase => {
@@ -98,9 +98,13 @@ function displayAndSpeak(message) {
 
 function setActiveMode() {
     isAwakened = true;
+     // Add the listening indicator
+    document.getElementById("listeningIndicator").style.backgroundColor = "red";
     clearTimeout(inactivityTimeout);
     inactivityTimeout = setTimeout(() => {
         isAwakened = false;
+         // Remove the listening indicator
+        document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
         displayMessage("Listening for wake word...", "system");
     }, INACTIVITY_DURATION);
 }
@@ -139,10 +143,16 @@ voiceButton.addEventListener("click", function() {
         manuallyStopped = false;
         recognition.start();
         voiceButton.textContent = "Stop";
+        // Add the listening indicator (e.g., changing the color of a dot)
+        document.getElementById("listeningIndicator").style.backgroundColor = "red";
+  
     } else {
         manuallyStopped = true;
         recognition.stop();
         voiceButton.textContent = "Start";
+         // Remove the listening indicator
+        document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
+  
     }
 });
 
