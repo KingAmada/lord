@@ -87,7 +87,7 @@ function processCommand(command) {
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
      if (conversationHistory.length > MAX_HISTORY_LENGTH) {
-        conversationHistory.shift();
+        //conversationHistory.shift();
     }
 }
 
