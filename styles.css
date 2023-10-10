@@ -6,6 +6,48 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+ overflow: hidden;  /* Add this */
+}
+
+.ripple-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 104px;
+    height: 104px;
+    background: #BE5869;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 10px 10px 33px #403A3E;
+    outline: none;
+}
+
+.ripple-button:before,
+.ripple-button:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 99px;
+    height: 99px;
+    border-radius: 50%;
+    border: 2px solid rgba(#403A3E, 0.7);
+    filter: blur(0);
+    transform-origin: 50%;
+    z-index: -1;
+}
+
+.ripple-button.active:before,
+.ripple-button.active:after {
+    border-color: transparent;
+    filter: blur(2px);
+    transform: scale(4);
+    transition: 1000ms transform ease, 2100ms blur ease, 900ms border-color ease;
+}
+
+.ripple-button.active:after {
+    transition-delay: 100ms;
 }
 
 .chat-container {
