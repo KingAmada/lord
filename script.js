@@ -207,7 +207,7 @@ function speakUsingVoice(text, voice, synth) {
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
-        //utterance.rate = 1.5;  // Increase the rate to make speech faster. Adjust this value as needed.
+        //utterance.rate = 0.9;  // Increase the rate to make speech faster. Adjust this value as needed.
         utterance.onend = () => setTimeout(speakChunk, 30);
         synth.speak(utterance);
         recognition.stop();  // Stop recognition while speaking
