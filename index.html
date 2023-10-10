@@ -9,16 +9,23 @@
 </head>
 
 <body>
+    <div class="header">
+        <h1>LORD</h1>
+        <p>Law or Rights On-demand</p>
+        <div class="slideshow-container">
+            <div class="slide fade">
+                <img src="path/to/image1.jpg" alt="Image 1">
+                <div class="quote">Quote 1</div>
+            </div>
+            <!-- Add more slides as needed -->
+        </div>
+    </div>
+    
     <div class="chat-container">
         <ul id="message-list"></ul>
         <div class="controls">
-            <button id="voice-btn" class="mic-btn ripple-button">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                    <path d="M12 1v6m0 0v6m-6 0a6 6 0 0012 0v-6m-6 0V1"></path>
-                    <path d="M3 10a9 9 0 0018 0V9a9 9 0 00-18 0v1z"></path>
-                    <path d="M12 19v4m0 0H9m3 0h3"></path>
-                </svg>
+            <button id="voice-btn" class="mic-btn">
+                <!-- SVG for mic icon -->
             </button>
             <div id="listeningIndicator" class="listening-indicator"></div>
         </div>
