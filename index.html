@@ -9,26 +9,43 @@
 </head>
 
 <body>
-    <div class="header">
-        <h1>LORD</h1>
-        <p>Law or Rights On-demand</p>
+    <div class="main-container">
+
+        <!-- Header Section -->
+        <div class="header">
+            <h1>LORD</h1>
+            <p>Law or Rights On-demand</p>
+        </div>
+
+        <!-- Slideshow Container -->
         <div class="slideshow-container">
-            <div class="slide fade">
-                <img src="path/to/image1.jpg" alt="Image 1">
-                <div class="quote">Quote 1</div>
+            <div class="slide">
+                <img src="https://www.brainyquote.com/photos_tr/en/a/alsharpton/366470/alsharpton1.jpg" alt="Slide Image 1">
+                <p class="quote">Quote 1</p>
             </div>
-            <!-- Add more slides as needed -->
+            <div class="slide">
+                <img src="https://quotefancy.com/media/wallpaper/3840x2160/82155-Quentin-Tarantino-Quote-Just-because-I-was-at-an-anti-police.jpg" alt="Slide Image 2">
+                <p class="quote">Quote 2</p>
+            </div>
+            <!-- ... Add more slides as needed ... -->
         </div>
-    </div>
-    
-    <div class="chat-container">
-        <ul id="message-list"></ul>
-        <div class="controls">
-            <button id="voice-btn" class="mic-btn">
-                <!-- SVG for mic icon -->
-            </button>
-            <div id="listeningIndicator" class="listening-indicator"></div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <ul id="message-list"></ul>
+            <div class="controls">
+                <button id="voice-btn" class="mic-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                        <path d="M12 1v6m0 0v6m-6 0a6 6 0 0012 0v-6m-6 0V1"></path>
+                        <path d="M3 10a9 9 0 0018 0V9a9 9 0 00-18 0v1z"></path>
+                        <path d="M12 19v4m0 0H9m3 0h3"></path>
+                    </svg>
+                </button>
+                <div id="listeningIndicator" class="listening-indicator"></div>
+            </div>
         </div>
+
     </div>
 
     <script src="script.js"></script>
