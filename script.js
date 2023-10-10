@@ -176,7 +176,8 @@ function speakText(text, synth) {
     if (synth.speaking) {
         synth.cancel();
     }
-    
+    text = text.replace(/\./g, ',');  // Replace all full stops with commas
+
     const voices = synth.getVoices();
     const voiceName = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent) ? "Google US English" : "Samantha";
     const targetVoice = voices.find(voice => voice.name === voiceName);
@@ -206,7 +207,7 @@ function speakUsingVoice(text, voice, synth) {
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
-        utterance.rate = 1.5;  // Increase the rate to make speech faster. Adjust this value as needed.
+        //utterance.rate = 1.5;  // Increase the rate to make speech faster. Adjust this value as needed.
         utterance.onend = () => setTimeout(speakChunk, 30);
         synth.speak(utterance);
         recognition.stop();  // Stop recognition while speaking
