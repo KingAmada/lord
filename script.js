@@ -59,6 +59,7 @@ function handleRecognitionResult(event) {
     
     lastRecognitionTime = Date.now();
     const userMessage = event.results[event.results.length - 1][0].transcript.trim();
+document.getElementById("voice-btn").classList.add("active");
 
      recognitionTimer = setTimeout(() => {
         if (Date.now() - lastRecognitionTime >= RECOGNITION_TIMEOUT) {
@@ -159,6 +160,7 @@ voiceButton.addEventListener("click", function() {
          // Remove the listening indicator
         document.getElementById("listeningIndicator").classList.add("listening");  // Add ripple effect
         document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
+        document.getElementById("voice-btn").classList.remove("active");
   
     }
 });
