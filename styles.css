@@ -44,6 +44,16 @@ body {
     object-fit: cover;
     border-radius: 10px;
 }
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+.slide:first-child {
+    display: block;
+}
 
 .quote {
     margin-top: 10px;
