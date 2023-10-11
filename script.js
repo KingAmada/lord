@@ -145,12 +145,15 @@ function textToSpeech(text) {
 const voiceButton = document.getElementById("voice-btn");
 
 voiceButton.addEventListener("click", function() {
-    if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {  // Added check for SVG
+     if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {  // Check for SVG
         manuallyStopped = false;
         recognition.start();
         voiceButton.textContent = "Stop";
         document.getElementById("listeningIndicator").classList.remove("listening");  
         document.getElementById("listeningIndicator").style.backgroundColor = "red";
+
+        // Set the system to active mode immediately after pressing the button
+        setActiveMode();
     } else {
         manuallyStopped = true;
         recognition.stop();
@@ -158,7 +161,7 @@ voiceButton.addEventListener("click", function() {
         document.getElementById("listeningIndicator").classList.add("listening"); 
         document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
         document.getElementById("voice-btn").classList.remove("active");
-}
+    }
 });
 
 recognition.onend = function() {
