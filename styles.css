@@ -171,12 +171,14 @@ scrollbar-width: none;  /* Firefox */
     position: sticky; /* Change this from absolute to sticky */
     bottom: 10px; 
     z-index: 2; 
-    //background: rgba(255, 255, 255, 0.8); /* Add a background color to the controls */
+    background: rgba(255, 255, 255, 0.8); /* Add a background color to the controls */
     padding: 10px 0; /* Add some padding to make it look better */
     border-top: 1px solid rgba(0, 0, 0, 0.1); /* Add a subtle border at the top */
     display: flex;
     justify-content: center;
     align-items: center;
+     width: 100%; 
+    box-shadow: 0 4px 6px rgba(0.1, 0, 0, 0); /* Shadow for depth */
 }
 
 .mic-btn {
