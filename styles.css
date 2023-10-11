@@ -11,19 +11,32 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 0;
+    background: rgba(255, 255, 255, 0.8);  /* Semi-transparent white background */
+    z-index: 1000;  /* Ensures the header is on top */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Shadow for depth */
 }
 
 .header h1 {
     margin: 0;
     color: #333;
-    font-size: 2rem;
+    font-size: 2.5rem;  /* Bigger font size */
+    font-weight: bold;  /* Bold text */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);  /* Subtle text shadow for depth */
 }
 
 .header p {
     color: #555;
     font-style: italic;
+    font-weight: lighter;  /* Lighter font weight for contrast */
+    margin-top: 5px;
+    font-size: 1.2rem;
 }
+
 
 .slideshow-container {
     position: relative;
@@ -62,6 +75,7 @@ body {
 }
 
 .chat-container {
+    padding-top: 80px; 
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 15px;
     width: 90%;
