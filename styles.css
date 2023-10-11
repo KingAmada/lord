@@ -10,14 +10,14 @@ body {
 /* ... Your previous CSS ... */
 
 .header {
-  text-align: center;
+      text-align: center;
     position: sticky;
     top: 0;
-    width: 100%; 
+    width: 100%;
     padding: 10px 0;
-    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
-    z-index: 1000; /* Ensures the header is on top */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .header h1 {
@@ -75,19 +75,18 @@ body {
 }
 
 .chat-container {
+   padding-top: 60px; /* Space for the header */
+    padding-bottom: 60px; /* Space for the controls */
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 15px;
     width: 90%;
     max-width: 400px;
-    padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        max-height: 640px; /* Standard height for many mobile devices. Adjust as needed. */
-    overflow-y: auto;  /* Enables scrolling when content overflows. */
-scrollbar-width: none;  /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    position: relative;  /* Make this container relatively positioned */
- //   padding-top: 80px;   /* Space for the header */
-    padding-bottom: 60px; /* Space for the controls */
+    max-height: 640px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative; /* Make sure this is set */
     
 }
 
@@ -168,17 +167,16 @@ scrollbar-width: none;  /* Firefox */
 }
 
 .controls {
-    position: sticky; /* Change this from absolute to sticky */
-    bottom: 10px; 
+    position: sticky;
+    bottom: 0; 
     z-index: 2; 
-    background: rgba(255, 255, 255, 0.8); /* Add a background color to the controls */
-    //padding: 10px 0; /* Add some padding to make it look better */
-    //border-top: 1px solid rgba(0, 0, 0, 0.1); /* Add a subtle border at the top */
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; 
-    box-shadow: 0 4px 6px rgba(0.1, 0, 0, 0); /* Shadow for depth */
+    width: 100%;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .mic-btn {
