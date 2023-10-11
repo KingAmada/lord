@@ -60,6 +60,7 @@ function handleRecognitionResult(event) {
     lastRecognitionTime = Date.now();
     const userMessage = event.results[event.results.length - 1][0].transcript.trim();
 document.getElementById("voice-btn").classList.add("active");
+ console.log("Recognized speech:", userMessage);
 
      recognitionTimer = setTimeout(() => {
         if (Date.now() - lastRecognitionTime >= RECOGNITION_TIMEOUT) {
@@ -254,6 +255,17 @@ async function getChatCompletion(prompt, modelIndex = 0) {
         return await getChatCompletion(prompt, modelIndex + 1);
     }
 }
+recognition.onaudiostart = function() {
+    console.log("Audio capturing started");
+};
+
+recognition.onsoundstart = function() {
+    console.log("Some sound is being received");
+};
+
+recognition.onspeechstart = function() {
+    console.log("Speech has been detected");
+};
 
 // Start the recognition process
 //recognition.start();
