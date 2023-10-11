@@ -86,11 +86,14 @@ document.getElementById("voice-btn").classList.add("active");
 }
 const MAX_HISTORY_LENGTH = 4;
 function processCommand(command) {
-    displayMessage(command, "user");
+     displayMessage(command, "user");
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
-     if (conversationHistory.length > MAX_HISTORY_LENGTH) {
+    if (conversationHistory.length > MAX_HISTORY_LENGTH) {
         conversationHistory.splice(1, 1);
+    }
+    if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+        recognition.start();  // Restart recognition after processing the command if not manually stopped
     }
 }
 
@@ -201,7 +204,9 @@ function speakUsingVoice(text, voice, synth) {
        let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
-            if (!manuallyStopped) recognition.start();  // Restart recognition after speaking is done only if not manually stopped
+            if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+                recognition.start();  // Restart recognition after speaking is done only if not manually stopped
+            }
             return;
         }
         let chunk = chunks.shift();
@@ -212,7 +217,7 @@ function speakUsingVoice(text, voice, synth) {
         synth.speak(utterance);
         recognition.stop();  // Stop recognition while speaking
     };
-    if (!manuallyStopped) speakChunk(); 
+    speakChunk(); 
 }
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
 
