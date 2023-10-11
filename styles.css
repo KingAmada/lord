@@ -11,11 +11,11 @@ body {
 
 .header {
     text-align: center;
-    position: relative; /* Make header absolute to the chat-container */
+    position: sticky; /* Make header absolute to the chat-container */
     top: 0; 
     left: 0;
     right: 0;
-    padding: 10px 0;
+    padding: 0px 0;
     background: rgba(255, 255, 255, 0.8); 
     z-index: 2; /* Ensures the header is on top */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
@@ -88,7 +88,7 @@ body {
 scrollbar-width: none;  /* Firefox */
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
     position: relative;  /* Make this container relatively positioned */
-    padding-top: 80px;   /* Space for the header */
+ //   padding-top: 80px;   /* Space for the header */
     padding-bottom: 60px; /* Space for the controls */
 }
 
