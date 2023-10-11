@@ -177,8 +177,8 @@ scrollbar-width: none;  /* Firefox */
     display: flex;
     justify-content: center;
     align-items: center;
-     width: 100%; 
-    box-shadow: 0 4px 6px rgba(0.1, 0, 0, 0); /* Shadow for depth */
+   //  width: 100%; 
+   // box-shadow: 0 4px 6px rgba(0.1, 0, 0, 0); /* Shadow for depth */
 }
 
 .mic-btn {
