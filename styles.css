@@ -15,7 +15,7 @@ body {
     top: 0; 
     left: 0;
     right: 0;
-    padding: 0px 0;
+    padding: 10px 0;
     background: rgba(255, 255, 255, 0.8); 
     z-index: 2; /* Ensures the header is on top */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
@@ -166,10 +166,10 @@ scrollbar-width: none;  /* Firefox */
 .controls {
     position: sticky; /* Change this from absolute to sticky */
     bottom: 10px; 
-    left: 50%; 
-    transform: translateX(-50%); 
+   // left: 50%; 
+   // transform: translateX(-50%); 
     z-index: 2; 
-    background: rgba(255, 255, 255, 0.8); /* Add a background color to the controls */
+    //background: rgba(255, 255, 255, 0.8); /* Add a background color to the controls */
     padding: 10px 0; /* Add some padding to make it look better */
     border-top: 1px solid rgba(0, 0, 0, 0.1); /* Add a subtle border at the top */
 }
