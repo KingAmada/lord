@@ -75,8 +75,8 @@ body {
 }
 
 .chat-container {
-   padding-top: 60px; /* Space for the header */
-    padding-bottom: 60px; /* Space for the controls */
+   //padding-top: 60px; /* Space for the header */
+ //   padding-bottom: 60px; /* Space for the controls */
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 15px;
     width: 90%;
