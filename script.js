@@ -145,24 +145,20 @@ function textToSpeech(text) {
 const voiceButton = document.getElementById("voice-btn");
 
 voiceButton.addEventListener("click", function() {
-    if (voiceButton.textContent === "Start") {
+    if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {  // Added check for SVG
         manuallyStopped = false;
         recognition.start();
         voiceButton.textContent = "Stop";
-        // Add the listening indicator (e.g., changing the color of a dot)
-         document.getElementById("listeningIndicator").classList.remove("listening");  // Remove ripple effect
+        document.getElementById("listeningIndicator").classList.remove("listening");  
         document.getElementById("listeningIndicator").style.backgroundColor = "red";
-  
     } else {
         manuallyStopped = true;
         recognition.stop();
         voiceButton.textContent = "Start";
-         // Remove the listening indicator
-        document.getElementById("listeningIndicator").classList.add("listening");  // Add ripple effect
+        document.getElementById("listeningIndicator").classList.add("listening"); 
         document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
         document.getElementById("voice-btn").classList.remove("active");
-  
-    }
+}
 });
 
 recognition.onend = function() {
@@ -257,4 +253,4 @@ async function getChatCompletion(prompt, modelIndex = 0) {
 }
 
 // Start the recognition process
-recognition.start();
+//recognition.start();
