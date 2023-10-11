@@ -10,17 +10,15 @@ body {
 /* ... Your previous CSS ... */
 
 .header {
-      text-align: center;
-    position: absolute; /* Positioning within the chat-container */
-    top: 0; 
-    left: 0;
-    right: 0;
+  text-align: center;
+    position: sticky;
+    top: 0;
+    width: 100%; 
     padding: 10px 0;
-    background: rgba(255, 255, 255, 0.8); 
-    z-index: 2; /* Ensures the header is on top */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    z-index: 1000; /* Ensures the header is on top */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
-
 
 .header h1 {
     margin: 0;
