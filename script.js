@@ -3,7 +3,7 @@ let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognitio
 let synth = window.speechSynthesis;
 let manuallyStopped = false;
 let lastRecognitionTime = Date.now();
-const RECOGNITION_TIMEOUT = 3000;  // 3 seconds
+const RECOGNITION_TIMEOUT = 1000;  // 3 seconds
 let recognitionTimer;
 let recognitionActive = false;
 
@@ -96,10 +96,6 @@ function processCommand(command) {
     resetActiveTimer();
     if (conversationHistory.length > MAX_HISTORY_LENGTH) {
         conversationHistory.splice(1, 1);
-    }
-    // Check if recognition is not active before attempting to start it
-    if (!recognitionActive && voiceButton.textContent === "Stop" && !manuallyStopped) {
-        recognition.start();
     }
 }
 
@@ -208,7 +204,7 @@ function speakText(text, synth) {
 }
 
 function speakUsingVoice(text, voice, synth) {
-       let chunks = text.split(/(?<=[.!?])\s+/);
+   let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
             if (voiceButton.textContent === "Stop" && !manuallyStopped) {
