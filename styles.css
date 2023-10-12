@@ -159,11 +159,14 @@ body {
     animation: ripple 1s infinite;
 }
 #message-list {
+    
     position: relative; /* Make sure the list is positioned relative to respect the z-index */
     z-index: 1; /* Ensures the messages are below the header and controls */
     overflow-y: scroll; 
     height: calc(100% - 140px); /* Adjusts height to account for header and controls */
                 padding: 80px 0 60px 40px; /* Added padding to ensure messages don't overlap with the header and controls */
+    position: fixed;
+ bottom: 10px;
 }
 
 .controls {
