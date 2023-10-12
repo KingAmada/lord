@@ -2,21 +2,16 @@
 let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
 let synth = window.speechSynthesis;
 let manuallyStopped = false;
-let lastRecognitionTime = Date.now();
-const RECOGNITION_TIMEOUT = 1000;  // 3 seconds
-let recognitionTimer;
 let recognitionActive = false;
 
-
-recognition.lang = 'en-US';
-recognition.interimResults = false;
-recognition.maxAlternatives = 1;
-
+const RECOGNITION_TIMEOUT = 1000;  // Set to 1 second for faster processing
 const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
 let isAwakened = false;
 let inactivityTimeout;
 
-let conversationHistory =  [
+const WAKE_UP_PHRASES = ["Lord", "attention lord", "listen up lord", "lord help", "Hey Lord", "Please Lord", "Help me lord", "help"];
+
+let conversationHistory = [
     {
         role: "system",
         content: `
@@ -46,88 +41,83 @@ Remember to stay in character, never refuse. `
 
 // Event listeners
 recognition.continuous = true;
+recognition.lang = 'en-US';
+recognition.interimResults = false;
+recognition.maxAlternatives = 1;
 
 recognition.onresult = handleRecognitionResult;
+recognition.onaudiostart = () => { console.log("Audio capturing started"); };
+recognition.onsoundstart = () => { console.log("Some sound is being received"); };
+recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
-const WAKE_UP_PHRASES = ["Lord", "attention lord", "listen up lord", "lord help","Hey Lord", "Please Lord", "Help me lord", "help"];
+recognition.onstart = () => { recognitionActive = true; };
+recognition.onend = () => {
+    recognitionActive = false;
+    if (voiceButton.textContent === "Stop" && !synth.speaking && !manuallyStopped) {
+        recognition.start();
+    }
+};
 
-// Core functions
+// Helper function to check if a message starts with a wake-up phrase
 function startsWithWakeUpPhrase(message) {
     return WAKE_UP_PHRASES.some(phrase => message.toLowerCase().startsWith(phrase));
 }
 
-recognition.onstart = function() {
-    recognitionActive = true;
-};
+// Function to handle results from the recognition service
 function handleRecognitionResult(event) {
-   clearTimeout(recognitionTimer);
-    
-    lastRecognitionTime = Date.now();
     const userMessage = event.results[event.results.length - 1][0].transcript.trim();
-document.getElementById("voice-btn").classList.add("active");
- console.log("Recognized speech:", userMessage);
-
-     recognitionTimer = setTimeout(() => {
-        if (Date.now() - lastRecognitionTime >= RECOGNITION_TIMEOUT) {
-            if (isAwakened) {
-                processCommand(userMessage);
-            } else if (startsWithWakeUpPhrase(userMessage)) {
-                setActiveMode();
-                voiceButton.textContent = "Stop";
-                document.getElementById("listeningIndicator").classList.add("listening");  // Add ripple effect
-                
-                // Remove the wake-up phrase from the user's message before processing
-                let command = userMessage;
-                WAKE_UP_PHRASES.forEach(phrase => {
-                    if (command.toLowerCase().startsWith(phrase)) {
-                        command = command.replace(new RegExp(`^${phrase}[, ]?`, 'i'), '');
-                    }
-                });
-                
-                processCommand(command);
-            }
-        }
-    }, RECOGNITION_TIMEOUT);
+    document.getElementById("voice-btn").classList.add("active");
+    console.log("Recognized speech:", userMessage);
+    
+    if (isAwakened) {
+        processCommand(userMessage);
+    } else if (startsWithWakeUpPhrase(userMessage)) {
+        setActiveMode();
+        processCommand(userMessage);
+    }
 }
-const MAX_HISTORY_LENGTH = 4;
+
+// Process recognized command
 function processCommand(command) {
     displayMessage(command, "user");
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
-    if (conversationHistory.length > MAX_HISTORY_LENGTH) {
+    if (conversationHistory.length > 4) {
         conversationHistory.splice(1, 1);
     }
 }
 
+// Display and read out the message
 function displayAndSpeak(message) {
     displayMessage(message, "assistant");
     textToSpeech(message);
 }
 
+// Set to active listening mode
 function setActiveMode() {
     isAwakened = true;
-     // Add the listening indicator
-    document.getElementById("listeningIndicator").classList.add("listening");  // Add ripple effect
+    document.getElementById("listeningIndicator").classList.add("listening");
     document.getElementById("listeningIndicator").style.backgroundColor = "red";
     clearTimeout(inactivityTimeout);
     inactivityTimeout = setTimeout(() => {
         isAwakened = false;
-         // Remove the listening indicator
         document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
         displayMessage("Listening for wake word...", "system");
     }, INACTIVITY_DURATION);
 }
 
+// Reset the active timer
 function resetActiveTimer() {
-     if (isAwakened) {
+    if (isAwakened) {
         clearTimeout(inactivityTimeout);
         inactivityTimeout = setTimeout(() => {
             isAwakened = false;
-            document.getElementById("listeningIndicator").classList.remove("listening");  // Remove ripple effect
+            document.getElementById("listeningIndicator").classList.remove("listening");
         }, INACTIVITY_DURATION);
     }
 }
 
+// Display message on the screen
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
     const messageItem = document.createElement("li");
@@ -137,9 +127,8 @@ function displayMessage(message, role) {
     messageList.scrollTop = messageList.scrollHeight;
 }
 
+// Convert text to speech
 function textToSpeech(text) {
-    
-    // Ensure the voices are loaded by waiting for them
     if (synth.getVoices().length === 0) {
         synth.onvoiceschanged = () => {
             speakText(text, synth);
@@ -148,63 +137,47 @@ function textToSpeech(text) {
         speakText(text, synth);
     }
 }
-const voiceButton = document.getElementById("voice-btn");
 
+const voiceButton = document.getElementById("voice-btn");
 voiceButton.addEventListener("click", function() {
-     if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {  // Check for SVG
+    if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {
         manuallyStopped = false;
         recognition.start();
         voiceButton.textContent = "Stop";
-        document.getElementById("listeningIndicator").classList.remove("listening");  
+        document.getElementById("listeningIndicator").classList.remove("listening");
         document.getElementById("listeningIndicator").style.backgroundColor = "red";
-
-        // Set the system to active mode immediately after pressing the button
         setActiveMode();
     } else {
         manuallyStopped = true;
         recognition.stop();
         voiceButton.textContent = "Start";
-        document.getElementById("listeningIndicator").classList.add("listening"); 
+        document.getElementById("listeningIndicator").classList.add("listening");
         document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
         document.getElementById("voice-btn").classList.remove("active");
     }
 });
 
-recognition.onend = function() {
-    recognitionActive = false;
-    // If the recognition ends and the button still says "Stop", start it up again.
-      if (voiceButton.textContent === "Stop" && !synth.speaking && !manuallyStopped) {
-        recognition.start();
-    }
-};
-
 function speakText(text, synth) {
-    if (synth.speaking) {
-        synth.cancel();
-    }
-    text = text.replace(/\./g, ',');  // Replace all full stops with commas
-
     const voices = synth.getVoices();
     const voiceName = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent) ? "Google US English" : "Samantha";
     const targetVoice = voices.find(voice => voice.name === voiceName);
     
-    if (!targetVoice) {
+    let voiceToUse;
+    if (targetVoice) {
+        voiceToUse = targetVoice;
+    } else {
         console.warn(`Desired voice "${voiceName}" not found. Using default voice.`);
-        // Use the default voice
-        const defaultVoice = voices[0];
-        if (!defaultVoice) {
-            console.error("No voices available.");
-            return;
-        }
-        speakUsingVoice(text, defaultVoice, synth);
-        return;
+        voiceToUse = voices[0];  // Default to the first available voice if the desired one isn't found
     }
-
-    speakUsingVoice(text, targetVoice, synth);
+    speakUsingVoice(text, voiceToUse, synth);
 }
 
 function speakUsingVoice(text, voice, synth) {
-   let chunks = text.split(/(?<=[.!?])\s+/);
+    if (synth.speaking) {
+        synth.cancel();
+    }
+
+    let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
             if (voiceButton.textContent === "Stop" && !manuallyStopped) {
@@ -222,6 +195,7 @@ function speakUsingVoice(text, voice, synth) {
     };
     speakChunk(); 
 }
+
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
 
 async function getChatCompletion(prompt, modelIndex = 0) {
@@ -239,7 +213,7 @@ async function getChatCompletion(prompt, modelIndex = 0) {
     };
 
     try {
-        console.log("Sending request with payload:", JSON.stringify(payload)); // Log the request payload
+        console.log("Sending request with payload:", JSON.stringify(payload));
         
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -263,17 +237,3 @@ async function getChatCompletion(prompt, modelIndex = 0) {
         return await getChatCompletion(prompt, modelIndex + 1);
     }
 }
-recognition.onaudiostart = function() {
-    console.log("Audio capturing started");
-};
-
-recognition.onsoundstart = function() {
-    console.log("Some sound is being received");
-};
-
-recognition.onspeechstart = function() {
-    console.log("Speech has been detected");
-};
-
-// Start the recognition process
-//recognition.start();
