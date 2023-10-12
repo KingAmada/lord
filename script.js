@@ -5,6 +5,8 @@ let manuallyStopped = false;
 let lastRecognitionTime = Date.now();
 const RECOGNITION_TIMEOUT = 3000;  // 3 seconds
 let recognitionTimer;
+let recognitionActive = false;
+
 
 recognition.lang = 'en-US';
 recognition.interimResults = false;
@@ -54,6 +56,9 @@ function startsWithWakeUpPhrase(message) {
     return WAKE_UP_PHRASES.some(phrase => message.toLowerCase().startsWith(phrase));
 }
 
+recognition.onstart = function() {
+    recognitionActive = true;
+};
 function handleRecognitionResult(event) {
    clearTimeout(recognitionTimer);
     
@@ -86,14 +91,15 @@ document.getElementById("voice-btn").classList.add("active");
 }
 const MAX_HISTORY_LENGTH = 4;
 function processCommand(command) {
-     displayMessage(command, "user");
+    displayMessage(command, "user");
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
     if (conversationHistory.length > MAX_HISTORY_LENGTH) {
         conversationHistory.splice(1, 1);
     }
-    if (voiceButton.textContent === "Stop" && !manuallyStopped) {
-        recognition.start();  // Restart recognition after processing the command if not manually stopped
+    // Check if recognition is not active before attempting to start it
+    if (!recognitionActive && voiceButton.textContent === "Stop" && !manuallyStopped) {
+        recognition.start();
     }
 }
 
@@ -169,6 +175,7 @@ voiceButton.addEventListener("click", function() {
 });
 
 recognition.onend = function() {
+    recognitionActive = false;
     // If the recognition ends and the button still says "Stop", start it up again.
       if (voiceButton.textContent === "Stop" && !synth.speaking && !manuallyStopped) {
         recognition.start();
