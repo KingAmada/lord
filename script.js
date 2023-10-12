@@ -179,7 +179,7 @@ function speakUsingVoice(text, voice, synth) {
     if (synth.speaking) {
         synth.cancel();
     }
-
+voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
@@ -197,7 +197,8 @@ function speakUsingVoice(text, voice, synth) {
         recognition.stop();  // Stop recognition while speaking
     };
     speakChunk(); 
-    voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
+    voiceButton.textContent = "Start";
+    
        
 }
 
