@@ -192,7 +192,12 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
         utterance.rate = 0.9;  // Increase the rate to make speech faster. Adjust this value as needed.
-        utterance.onend = () => setTimeout(speakChunk, 30);
+        utterance.onend = () => {
+            setTimeout(speakChunk, 30);
+            if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+                recognition.start();  // Restart recognition after speaking is done only if not manually stopped
+            }
+        };
         synth.speak(utterance);
         recognition.stop();  // Stop recognition while speaking
     };
