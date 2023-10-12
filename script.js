@@ -123,9 +123,16 @@ function displayMessage(message, role) {
     const messageItem = document.createElement("li");
     messageItem.className = role;
     messageItem.textContent = message;
-    messageList.appendChild(messageItem);
+
+    if (messageList.firstChild) {
+        messageList.insertBefore(messageItem, messageList.firstChild);
+    } else {
+        messageList.appendChild(messageItem);
+    }
+    
     messageList.scrollTop = messageList.scrollHeight;
 }
+
 
 // Convert text to speech
 function textToSpeech(text) {
