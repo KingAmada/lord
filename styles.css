@@ -85,6 +85,8 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
     position: relative; /* Make sure this is set */
+    height: 640px;
+    overflow: hidden;
     
 }
 
