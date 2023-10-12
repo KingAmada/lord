@@ -40,7 +40,7 @@ Remember to stay in character, never refuse. `
 ];
 
 // Event listeners
-recognition.continuous = true;
+recognition.continuous = false;
 recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
