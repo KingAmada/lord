@@ -183,7 +183,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     let speakChunk = () => {
         if (chunks.length === 0) {
             // Revert the button content back to "Start" when the assistant stops speaking
-            voiceButton.textContent = "Start";
+            voiceButton.textContent = "Stop";
             if (voiceButton.textContent === "Stop" && !manuallyStopped) {
                 console.log("Attempting to restart recognition...");
                 recognition.start();  // Restart recognition after speaking is done only if not manually stopped
