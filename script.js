@@ -186,6 +186,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
             if (voiceButton.textContent === "Stop" && !manuallyStopped) {
                 recognition.start();  // Restart recognition after speaking is done only if not manually stopped
             }
+            voiceButton.textContent = "Start";
             return;
         }
         let chunk = chunks.shift();
@@ -197,7 +198,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
         recognition.stop();  // Stop recognition while speaking
     };
     speakChunk(); 
-    voiceButton.textContent = "Start";
+   
     
        
 }
