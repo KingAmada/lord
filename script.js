@@ -68,7 +68,8 @@ function handleRecognitionResult(event) {
     const userMessage = event.results[event.results.length - 1][0].transcript.trim();
     document.getElementById("voice-btn").classList.add("active");
     console.log("Recognized speech:", userMessage);
-    
+    voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listen.gif" alt="Listening...">';
+       
     if (isAwakened) {
         processCommand(userMessage);
     } else if (startsWithWakeUpPhrase(userMessage)) {
@@ -145,8 +146,7 @@ voiceButton.addEventListener("click", function() {
     if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {
         manuallyStopped = false;
         recognition.start();
-        voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listen.gif" alt="Listening...">';
-        //voiceButton.textContent = "Stop";
+         //voiceButton.textContent = "Stop";
         document.getElementById("listeningIndicator").classList.remove("listening");
         document.getElementById("listeningIndicator").style.backgroundColor = "red";
         setActiveMode();
@@ -197,6 +197,8 @@ function speakUsingVoice(text, voice, synth) {
         recognition.stop();  // Stop recognition while speaking
     };
     speakChunk(); 
+    voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
+       
 }
 
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
