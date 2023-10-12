@@ -123,12 +123,10 @@ function displayMessage(message, role) {
     const messageItem = document.createElement("li");
     messageItem.className = role;
     messageItem.textContent = message;
-    messageList.appendChild(messageItem);
-    messageList.scrollTop = messageList.scrollHeight;
-     messageList.scrollTo({
-        top: messageList.scrollHeight,
-        behavior: 'smooth'
-    });
+    messageList.insertBefore(messageItem, messageList.firstChild);
+   // messageList.appendChild(messageItem);
+    //messageList.scrollTop = messageList.scrollHeight;
+    
 }
 
 
