@@ -145,7 +145,8 @@ voiceButton.addEventListener("click", function() {
     if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {
         manuallyStopped = false;
         recognition.start();
-        voiceButton.textContent = "Stop";
+        voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listen.gif" alt="Listening...">';
+        //voiceButton.textContent = "Stop";
         document.getElementById("listeningIndicator").classList.remove("listening");
         document.getElementById("listeningIndicator").style.backgroundColor = "red";
         setActiveMode();
