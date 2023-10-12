@@ -182,26 +182,25 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
+            // Revert the button content back to "Start" when the assistant stops speaking
+            voiceButton.textContent = "Start";
             if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+                console.log("Attempting to restart recognition...");
                 recognition.start();  // Restart recognition after speaking is done only if not manually stopped
             }
-            voiceButton.textContent = "Stop";
             return;
         }
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
-        utterance.rate = 0.9;  // Increase the rate to make speech faster. Adjust this value as needed.
+        utterance.rate = 0.9;
         utterance.onend = () => {
             setTimeout(speakChunk, 30);
-            if (voiceButton.textContent === "Stop") {
-                recognition.start();  // Restart recognition after speaking is done only if not manually stopped
-            }
+            recognition.stop();  // Stop recognition while speaking
         };
         synth.speak(utterance);
-        recognition.stop();  // Stop recognition while speaking
     };
-    speakChunk();       
+    speakChunk();    
 }
 
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
