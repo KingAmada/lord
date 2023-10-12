@@ -85,8 +85,8 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
     position: relative; /* Make sure this is set */
-    height: 640px;
-    overflow: hidden;
+    //height: 640px;
+    //overflow: hidden;
     
 }
 
@@ -159,6 +159,8 @@ body {
     animation: ripple 1s infinite;
 }
 #message-list {
+    display: flex;
+    flex-direction: column-reverse;
     position: relative; /* Make sure the list is positioned relative to respect the z-index */
     z-index: 1; /* Ensures the messages are below the header and controls */
     overflow-y: scroll; 
