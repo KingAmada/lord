@@ -194,7 +194,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
         utterance.rate = 0.9;  // Increase the rate to make speech faster. Adjust this value as needed.
         utterance.onend = () => {
             setTimeout(speakChunk, 30);
-            if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+            if (voiceButton.textContent === "Stop") {
                 recognition.start();  // Restart recognition after speaking is done only if not manually stopped
             }
         };
