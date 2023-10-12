@@ -125,6 +125,10 @@ function displayMessage(message, role) {
     messageItem.textContent = message;
     messageList.appendChild(messageItem);
     messageList.scrollTop = messageList.scrollHeight;
+     messageList.scrollTo({
+        top: messageList.scrollHeight,
+        behavior: 'smooth'
+    });
 }
 
 
