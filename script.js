@@ -120,13 +120,20 @@ function resetActiveTimer() {
 // Display message on the screen
 function displayMessage(message, role) {
     const messageList = document.getElementById("message-list");
+    
+    // Remember the current height and scroll position
+    const previousHeight = messageList.scrollHeight;
+    const previousScrollTop = messageList.scrollTop;
+
     const messageItem = document.createElement("li");
     messageItem.className = role;
     messageItem.textContent = message;
-    messageList.insertBefore(messageItem, messageList.firstChild);
-   // messageList.appendChild(messageItem);
-    //messageList.scrollTop = messageList.scrollHeight;
-    
+    messageList.appendChild(messageItem);
+
+    // Adjust scroll position
+    const newHeight = messageList.scrollHeight;
+    messageList.scrollTop = previousScrollTop + (newHeight - previousHeight);
+
 }
 
 
