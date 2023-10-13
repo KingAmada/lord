@@ -64,7 +64,17 @@ function startsWithWakeUpPhrase(message) {
 }
 if (window.AudioContext && new AudioContext().state === "suspended") {
     console.log("Auto-play might be restricted. Need user gesture to enable.");
-    // You can add additional logic here to handle this scenario, like showing a message to the user.
+
+    // Add a one-time event listener for a user gesture
+    document.addEventListener('click', function resumeAudioContext(event){
+        // Attempt to resume the audio context
+        new AudioContext().resume().then(() => {
+            console.log("AudioContext resumed successfully");
+            
+            // Remove the event listener after it's been executed
+            document.removeEventListener('click', resumeAudioContext);
+        });
+    });
 }
 
 // Function to handle results from the recognition service
