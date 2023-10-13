@@ -14,7 +14,7 @@ body {
     position: sticky;
     top: 0;
     width: 100%;
-    padding: 10px 0;
+    padding: 0 0 10px;
    background: linear-gradient(to right, #74ebd5, #acb6e5);
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
