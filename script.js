@@ -62,6 +62,10 @@ recognition.onend = () => {
 function startsWithWakeUpPhrase(message) {
     return WAKE_UP_PHRASES.some(phrase => message.toLowerCase().startsWith(phrase));
 }
+if (window.AudioContext && new AudioContext().state === "suspended") {
+    console.log("Auto-play might be restricted. Need user gesture to enable.");
+    // You can add additional logic here to handle this scenario, like showing a message to the user.
+}
 
 // Function to handle results from the recognition service
 function handleRecognitionResult(event) {
