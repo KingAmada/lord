@@ -15,10 +15,10 @@ body {
     top: 0;
     width: 100%;
     padding: 10px 0;
-    //background: linear-gradient(to right, #74ebd5, #acb6e5);
+   // background: linear-gradient(to right, #74ebd5, #acb6e5);
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    animation: gradientAnimation 10s infinite;
+    animation: gradientAnimation 20s infinite;
     margin: 0;
 }
 
@@ -39,17 +39,20 @@ body {
 }
 
 @keyframes gradientAnimation {
-    0%, 100% {
-        background-image: linear-gradient(navy, purple);
+    0% {
+        background: linear-gradient(to right, navy, purple, lightblue, maroon);
     }
     25% {
-        background-image: linear-gradient(purple, lightblue);
+        background: linear-gradient(to right, purple, lightblue, maroon, navy);
     }
     50% {
-        background-image: linear-gradient(lightblue, maroon);
+        background: linear-gradient(to right, lightblue, maroon, navy, purple);
     }
     75% {
-        background-image: linear-gradient(maroon, navy);
+        background: linear-gradient(to right, maroon, navy, purple, lightblue);
+    }
+    100% {
+        background: linear-gradient(to right, navy, purple, lightblue, maroon);
     }
 }
 
