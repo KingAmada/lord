@@ -15,9 +15,12 @@ body {
     top: 0;
     width: 100%;
     padding: 10px 0;
-    background: linear-gradient(to right, #74ebd5, #acb6e5);
+    //background: linear-gradient(to right, #74ebd5, #acb6e5);
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: gradientAnimation 10s infinite;
+    height: 100vh;
+    margin: 0;
 }
 
 .header h1 {
@@ -36,7 +39,23 @@ body {
     font-size: 1.2rem;
 }
 
-
+@keyframes gradientAnimation {
+    0% {
+        background-image: linear-gradient(navy, purple);
+    }
+    25% {
+        background-image: linear-gradient(purple, lightblue);
+    }
+    50% {
+        background-image: linear-gradient(lightblue, maroon);
+    }
+    75% {
+        background-image: linear-gradient(maroon, navy);
+    }
+    100% {
+        background-image: linear-gradient(navy, purple);
+    }
+}
 
 .slideshow-container {
     position: relative;
