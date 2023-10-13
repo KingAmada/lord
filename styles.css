@@ -39,7 +39,7 @@ body {
 }
 
 @keyframes gradientAnimation {
-    0% {
+    0%, 100% {
         background-image: linear-gradient(navy, purple);
     }
     25% {
@@ -50,9 +50,6 @@ body {
     }
     75% {
         background-image: linear-gradient(maroon, navy);
-    }
-    100% {
-        background-image: linear-gradient(navy, purple);
     }
 }
 
