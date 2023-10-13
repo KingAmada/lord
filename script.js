@@ -160,18 +160,16 @@ voiceButton.addEventListener("click", function() {
 });
 
 function speakText(text, synth) {
-    const voices = synth.getVoices();
+       const voices = synth.getVoices();
     const voiceName = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent) ? "Google US English" : "Samantha";
-    const targetVoice = voices.find(voice => voice.name === voiceName);
-    
-    let voiceToUse;
-    if (targetVoice) {
-        voiceToUse = targetVoice;
-    } else {
+    let targetVoice = voices.find(voice => voice.name === voiceName);
+
+    // If neither "Samantha" nor "Google US English" is found, use the first available voice
+    if (!targetVoice) {
         console.warn(`Desired voice "${voiceName}" not found. Using default voice.`);
-        voiceToUse = voices[0];  // Default to the first available voice if the desired one isn't found
+        targetVoice = voices[0];
     }
-    speakUsingVoice(text, voiceToUse, synth);
+    speakUsingVoice(text, targetVoice, synth);
 }
 
 function speakUsingVoice(text, voice, synth) {
