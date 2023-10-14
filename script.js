@@ -9,7 +9,7 @@ const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
 let isAwakened = false;
 let inactivityTimeout;
 
-const WAKE_UP_PHRASES = ["Lord", "attention lord", "listen up lord", "lord help", "Hey Lord", "Please Lord", "Help me lord", "help"];
+const WAKE_UP_PHRASES = ["Hi"];
 
 let conversationHistory = [
     {
