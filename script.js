@@ -144,6 +144,12 @@ voiceButton.addEventListener("click", function() {
         recognition.stop();
         voiceButton.textContent = "START";
         document.getElementById("voice-btn").classList.remove("active");
+        // Remove the "Listening..." message
+        const messageList = document.getElementById("message-list");
+        const lastMessage = messageList.lastChild;
+        if (lastMessage && lastMessage.textContent === "Listening...") {
+            messageList.removeChild(lastMessage);
+        }
     }
 });
 
