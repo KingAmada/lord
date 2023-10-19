@@ -184,7 +184,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
         utterance.voice = voice;
         utterance.rate = 1.1;
         utterance.onend = () => {
-            setTimeout(speakChunk, 30);
+            setTimeout(speakChunk, 10);
         };
         synth.speak(utterance);
     };
