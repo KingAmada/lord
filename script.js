@@ -166,14 +166,17 @@ function speakUsingVoice(text, voice, synth) {
         synth.cancel();
     }
 voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
+    let shouldRestartRecognition = false;
     let chunks = text.split(/(?<=[.!?])\s+/);
+
 let speakChunk = () => {
     if (chunks.length === 0) {
-        // Restart the recognition after speaking is done only if not manually stopped
-        if (voiceButton.textContent === "STOP" && !manuallyStopped) {
+        // If recognition should restart, then start it.
+        if (shouldRestartRecognition && !manuallyStopped) {
             console.log("Attempting to restart recognition...");
             recognition.start();
         }
+        shouldRestartRecognition = false; // Reset the flag for next time
         return;
     }
 
@@ -183,14 +186,19 @@ let speakChunk = () => {
     utterance.rate = 1.1;
 
     utterance.onend = () => {
-        setTimeout(speakChunk, 30); // Continue with the next chunk
-        recognition.stop();  // Stop recognition while speaking the next chunk
+        setTimeout(() => {
+            speakChunk(); // Continue with the next chunk
+            if (chunks.length === 0) {
+                shouldRestartRecognition = true;
+            }
+            recognition.stop();  // Stop recognition while speaking the next chunk
+        }, 30);
     };
 
     synth.speak(utterance);
 };
 
-speakChunk();  
+speakChunk(); 
 }
 
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
