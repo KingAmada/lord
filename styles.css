@@ -124,9 +124,6 @@ body {
     text-align: center;
 }
 
-.listening-indicator.listening {
-    animation: ripple 1s infinite;
-}
 #message-list {
     
     position: relative; /* Make sure the list is positioned relative to respect the z-index */
@@ -155,17 +152,22 @@ body {
     cursor: pointer;
     outline: none;
     margin-right: 10px;
-}
+    width: 60px;  /* Equal width and height to make it round */
+    height: 60px;
+    border-radius: 50%;  /* Rounded corners */
+    display: flex;  /* Center the SVG icon inside the button */
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;  /* Bold font */
+    font-size: 1.5rem;  /* Larger font size */
+    transition: transform 0.3s;  /* Smooth transition for hover effect */
 
+}
+.mic-btn:hover {
+    transform: scale(1.1);  /* Slightly enlarge the button when hovered */
+}
 .icon {
     width: 30px;
     height: 30px;
     color: #333;
-}
-
-.listening-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: transparent;
 }
