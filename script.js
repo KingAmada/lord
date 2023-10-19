@@ -33,7 +33,7 @@ recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
     recognitionActive = false;
-    if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
+    if (voiceButton.textContent === "Stop" && !synth.speaking && !manuallyStopped && !recognitionActive) {
         recognition.start();
     }
 };
@@ -78,7 +78,9 @@ function handleRecognitionResult(event) {
 
 // Process recognized command
 function processCommand(command) {
-    displayMessage(command, "user");
+    if (!listeningMessageElement) {
+        displayMessage(command, "user");
+    }
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
     if (conversationHistory.length > 4) {
