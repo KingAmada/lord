@@ -153,15 +153,16 @@ body {
     cursor: pointer;
     outline: none;
     margin-right: 10px;
-    width: 60px;  /* Equal width and height to make it round */
-    height: 60px;
+    width: 40px;  /* Equal width and height to make it round */
+    height: 40px;
     border-radius: 50%;  /* Rounded corners */
     display: flex;  /* Center the SVG icon inside the button */
     align-items: center;
     justify-content: center;
     font-weight: bold;  /* Bold font */
-    font-size: 1.5rem;  /* Larger font size */
+    font-size: 0.8rem;  /* Larger font size */
     transition: transform 0.3s;  /* Smooth transition for hover effect */
+    color: white;
 
 }
 .mic-btn:hover {
