@@ -90,12 +90,9 @@ function displayAndSpeak(message) {
 // Set to active listening mode
 function setActiveMode() {
     isAwakened = true;
-    document.getElementById("listeningIndicator").classList.add("listening");
-    document.getElementById("listeningIndicator").style.backgroundColor = "red";
     clearTimeout(inactivityTimeout);
     inactivityTimeout = setTimeout(() => {
         isAwakened = false;
-        document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
         displayMessage("Listening for wake word...", "system");
     }, INACTIVITY_DURATION);
 }
@@ -106,7 +103,6 @@ function resetActiveTimer() {
         clearTimeout(inactivityTimeout);
         inactivityTimeout = setTimeout(() => {
             isAwakened = false;
-            document.getElementById("listeningIndicator").classList.remove("listening");
         }, INACTIVITY_DURATION);
     }
 }
@@ -140,15 +136,11 @@ voiceButton.addEventListener("click", function() {
         manuallyStopped = false;
         recognition.start();
         voiceButton.textContent = "Stop";
-        document.getElementById("listeningIndicator").classList.remove("listening");
-        document.getElementById("listeningIndicator").style.backgroundColor = "red";
         setActiveMode();
     } else {
         manuallyStopped = true;
         recognition.stop();
         voiceButton.textContent = "Start";
-        document.getElementById("listeningIndicator").classList.add("listening");
-        document.getElementById("listeningIndicator").style.backgroundColor = "transparent";
         document.getElementById("voice-btn").classList.remove("active");
     }
 });
