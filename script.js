@@ -167,39 +167,30 @@ function speakUsingVoice(text, voice, synth) {
     }
 voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
     let chunks = text.split(/(?<=[.!?])\s+/);
-    let speakChunk = () => {
-        if (chunks.length === 0) {
-            // Revert the button content back to "Start" when the assistant stops speaking
-            voiceButton.textContent = "STOP";
-            if (voiceButton.textContent === "STOP" && !manuallyStopped) {
-                console.log("Attempting to restart recognition...");
-                recognition.start();  // Restart recognition after speaking is done only if not manually stopped
-            }
-            return;
+let speakChunk = () => {
+    if (chunks.length === 0) {
+        // Restart the recognition after speaking is done only if not manually stopped
+        if (voiceButton.textContent === "STOP" && !manuallyStopped) {
+            console.log("Attempting to restart recognition...");
+            recognition.start();
         }
-        let chunk = chunks.shift();
-        let utterance = new SpeechSynthesisUtterance(chunk);
-        utterance.voice = voice;
-        utterance.rate = 1.1;
-        utterance.onend = () => {
-            setTimeout(() => {
-        speakChunk(); // Continue with the next chunk
-        if (chunks.length === 0) {
-            // If no more chunks are left, restart the recognition after a delay
-            setTimeout(() => {
-                if (voiceButton.textContent === "STOP" && !manuallyStopped) {
-                    console.log("Attempting to restart recognition...");
-                    recognition.start();
-                }
-            }, 500); // 500ms delay
-        } else {
-            recognition.stop();  // Stop recognition while speaking the next chunk
-        }
-    }, 30);
-        };
-        synth.speak(utterance);
+        return;
+    }
+
+    let chunk = chunks.shift();
+    let utterance = new SpeechSynthesisUtterance(chunk);
+    utterance.voice = voice;
+    utterance.rate = 1.1;
+
+    utterance.onend = () => {
+        setTimeout(speakChunk, 30); // Continue with the next chunk
+        recognition.stop();  // Stop recognition while speaking the next chunk
     };
-    speakChunk();    
+
+    synth.speak(utterance);
+};
+
+speakChunk();  
 }
 
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
