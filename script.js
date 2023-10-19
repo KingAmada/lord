@@ -25,7 +25,8 @@ recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
 recognition.onresult = handleRecognitionResult;
-recognition.onaudiostart = () => { console.log("Audio capturing started");  displayMessage("Listening...", "user");};
+recognition.onaudiostart = () => { console.log("Audio capturing started");  const listeningMessage = displayMessage("Listening...", "user");
+    listeningMessage.classList.add("typingEffect");};
 recognition.onsoundstart = () => { console.log("Some sound is being received"); };
 recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
@@ -58,8 +59,6 @@ function handleRecognitionResult(event) {
        const userMessage = event.results[event.results.length - 1][0].transcript.trim();
     document.getElementById("voice-btn").classList.add("active");
     console.log("Recognized speech:", userMessage);
-const listeningMessage = displayMessage("Listening...", "user");
-    listeningMessage.classList.add("typingEffect");
     // Update the last message with the recognized speech
     const messageList = document.getElementById("message-list");
     const lastMessage = messageList.lastChild;
