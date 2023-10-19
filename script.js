@@ -25,7 +25,8 @@ recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
 recognition.onresult = handleRecognitionResult;
-recognition.onaudiostart = () => { console.log("Audio capturing started");  displayMessage("Listening...", "user");};
+recognition.onaudiostart = () => { console.log("Audio capturing started");  displayMessage("Listening...", "user");const listeningMessage = displayMessage("Listening...", "user");
+    listeningMessage.classList.add("typingEffect");};
 recognition.onsoundstart = () => { console.log("Some sound is being received"); };
 recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
