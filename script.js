@@ -132,15 +132,15 @@ function textToSpeech(text) {
 
 const voiceButton = document.getElementById("voice-btn");
 voiceButton.addEventListener("click", function() {
-    if (voiceButton.textContent === "Start" || voiceButton.querySelector("svg")) {
+    if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
         manuallyStopped = false;
         recognition.start();
-        voiceButton.textContent = "Stop";
+        voiceButton.textContent = "STOP";
         setActiveMode();
     } else {
         manuallyStopped = true;
         recognition.stop();
-        voiceButton.textContent = "Start";
+        voiceButton.textContent = "START";
         document.getElementById("voice-btn").classList.remove("active");
     }
 });
@@ -167,8 +167,8 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     let speakChunk = () => {
         if (chunks.length === 0) {
             // Revert the button content back to "Start" when the assistant stops speaking
-            voiceButton.textContent = "Stop";
-            if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+            voiceButton.textContent = "STOP";
+            if (voiceButton.textContent === "STOP" && !manuallyStopped) {
                 console.log("Attempting to restart recognition...");
                 recognition.start();  // Restart recognition after speaking is done only if not manually stopped
             }
@@ -184,7 +184,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
         if (chunks.length === 0) {
             // If no more chunks are left, restart the recognition after a delay
             setTimeout(() => {
-                if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+                if (voiceButton.textContent === "STOP" && !manuallyStopped) {
                     console.log("Attempting to restart recognition...");
                     recognition.start();
                 }
