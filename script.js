@@ -3,7 +3,7 @@ let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognitio
 let synth = window.speechSynthesis;
 let manuallyStopped = false;
 let recognitionActive = false;
-
+let listeningMessageElement = null;
 const RECOGNITION_TIMEOUT = 1000;  // Set to 1 second for faster processing
 const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
 let isAwakened = false;
@@ -26,14 +26,14 @@ recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
 recognition.onresult = handleRecognitionResult;
-recognition.onaudiostart = () => { console.log("Audio capturing started"); };
+recognition.onaudiostart = () => { console.log("Audio capturing started");  listeningMessageElement = displayMessage("Listening...", "user");};
 recognition.onsoundstart = () => { console.log("Some sound is being received"); };
 recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
     recognitionActive = false;
-    if (voiceButton.textContent === "Stop" && !synth.speaking && !manuallyStopped) {
+    if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
         recognition.start();
     }
 };
@@ -62,7 +62,12 @@ function handleRecognitionResult(event) {
     const userMessage = event.results[event.results.length - 1][0].transcript.trim();
     document.getElementById("voice-btn").classList.add("active");
     console.log("Recognized speech:", userMessage);
-       
+     if (listeningMessageElement) {
+        listeningMessageElement.textContent = userMessage;
+        listeningMessageElement = null;
+    } else {
+        displayMessage(userMessage, "user");
+    }   
     if (isAwakened) {
         processCommand(userMessage);
     } else if (startsWithWakeUpPhrase(userMessage)) {
@@ -116,6 +121,7 @@ function displayMessage(message, role) {
     messageList.appendChild(messageItem);
     // Scroll to the bottom
     messageList.scrollTop = messageList.scrollHeight;
+    return messageItem;  // return the created element
 }
 
 
