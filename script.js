@@ -166,29 +166,29 @@ function speakUsingVoice(text, voice, synth) {
         synth.cancel();
     }
 voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
-    let chunks = text.split(/(?<=[.!?])\s+/);
+   let chunks = text.split(/(?<=[.!?])\s+/);
+
     let speakChunk = () => {
         if (chunks.length === 0) {
-            // Revert the button content back to "Start" when the assistant stops speaking
-            voiceButton.textContent = "STOP";
-            if (voiceButton.textContent === "STOP" && !manuallyStopped) {
+            // All chunks have been spoken, now we can restart the recognition
+            if (!manuallyStopped) {
                 console.log("Attempting to restart recognition...");
-                recognition.start();  // Restart recognition after speaking is done only if not manually stopped
+                recognition.start();
             }
             return;
         }
+
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
         utterance.rate = 1.1;
         utterance.onend = () => {
-            setTimeout(() => {
-        speakChunk(); // Continue with the next chunk
-    }, 30);
+            setTimeout(speakChunk, 30);
         };
         synth.speak(utterance);
     };
-    speakChunk();  
+
+    speakChunk(); 
 }
 
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
