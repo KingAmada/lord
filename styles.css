@@ -147,7 +147,8 @@ body {
 }
 
 .mic-btn {
-    background-color: linear-gradient(to right, #acb6e5, #74ebd5);
+    font-family: 'Serif', sans-serif;
+    background: linear-gradient(to right, #74ebd5, #acb6e5);
     border: none;
     cursor: pointer;
     outline: none;
