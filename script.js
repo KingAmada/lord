@@ -174,11 +174,11 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
-            voiceButton.textContent = "STOP";
+            voiceButtotartn.textContent = "STOP";
             // All chunks have been spoken, now we can restart the recognition
             if (!manuallyStopped) {
                 console.log("Attempting to restart recognition...");
-                
+                recognition.start();
             }
             return;
         }
@@ -193,7 +193,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     };
 
     speakChunk(); 
-    recognition.start();
+ 
 }
 
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
