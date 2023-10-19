@@ -185,10 +185,22 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
-        utterance.rate = 0.9;
+        utterance.rate = 1.1;
         utterance.onend = () => {
-            setTimeout(speakChunk, 30);
-            recognition.stop();  // Stop recognition while speaking
+            setTimeout(() => {
+        speakChunk(); // Continue with the next chunk
+        if (chunks.length === 0) {
+            // If no more chunks are left, restart the recognition after a delay
+            setTimeout(() => {
+                if (voiceButton.textContent === "Stop" && !manuallyStopped) {
+                    console.log("Attempting to restart recognition...");
+                    recognition.start();
+                }
+            }, 500); // 500ms delay
+        } else {
+            recognition.stop();  // Stop recognition while speaking the next chunk
+        }
+    }, 30);
         };
         synth.speak(utterance);
     };
