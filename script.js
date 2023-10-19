@@ -3,7 +3,6 @@ let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognitio
 let synth = window.speechSynthesis;
 let manuallyStopped = false;
 let recognitionActive = false;
-let listeningMessageElement;
 const RECOGNITION_TIMEOUT = 1000;  // Set to 1 second for faster processing
 const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
 let isAwakened = false;
@@ -26,7 +25,7 @@ recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
 recognition.onresult = handleRecognitionResult;
-recognition.onaudiostart = () => { console.log("Audio capturing started");  listeningMessageElement = displayMessage("Listening...", "user");};
+recognition.onaudiostart = () => { console.log("Audio capturing started");  displayMessage("Listening...", "user");};
 recognition.onsoundstart = () => { console.log("Some sound is being received"); };
 recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
@@ -62,12 +61,14 @@ function handleRecognitionResult(event) {
        const userMessage = event.results[event.results.length - 1][0].transcript.trim();
     document.getElementById("voice-btn").classList.add("active");
     console.log("Recognized speech:", userMessage);
-    
-    if (listeningMessageElement) {
-        listeningMessageElement.textContent = userMessage;  // Replace the text of "Listening..." with the actual message
-        listeningMessageElement = null;  // Reset the reference
+
+    // Update the last message with the recognized speech
+    const messageList = document.getElementById("message-list");
+    const lastMessage = messageList.lastChild;
+    if (lastMessage) {
+        lastMessage.textContent = userMessage;
     }
-       
+
     if (isAwakened) {
         processCommand(userMessage);
     } else if (startsWithWakeUpPhrase(userMessage)) {
@@ -78,9 +79,7 @@ function handleRecognitionResult(event) {
 
 // Process recognized command
 function processCommand(command) {
-    if (!listeningMessageElement) {
-        displayMessage(command, "user");
-    }
+    displayMessage(command, "user");
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
     if (conversationHistory.length > 4) {
