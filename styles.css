@@ -147,7 +147,7 @@ body {
 }
 
 .mic-btn {
-    background-color: transparent;
+    background-color: linear-gradient(to right, #acb6e5, #74ebd5);
     border: none;
     cursor: pointer;
     outline: none;
