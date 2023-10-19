@@ -32,9 +32,6 @@ recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
     recognitionActive = false;
-    if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped && !recognitionActive) {
-        recognition.start();
-    }
 };
 
 // Helper function to check if a message starts with a wake-up phrase
