@@ -173,18 +173,3 @@ body {
     height: 30px;
     color: #333;
 }
-@keyframes typing {
-    from { width: 0; }
-    to { width: 100%; }
-}
-
-@keyframes blinkCursor {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-.typingEffect::after {
-    content: '|';  /* This simulates the cursor */
-    animation: blinkCursor 1s infinite;
-}
