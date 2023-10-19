@@ -79,7 +79,7 @@ function handleRecognitionResult(event) {
 
 // Process recognized command
 function processCommand(command) {
-    displayMessage(command, "user");
+   // displayMessage(command, "user");
     getChatCompletion(command).then(displayAndSpeak);
     resetActiveTimer();
     if (conversationHistory.length > 4) {
