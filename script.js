@@ -168,6 +168,15 @@ function speakUsingVoice(text, voice, synth) {
 voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
+        if (chunks.length === 0) {
+            // Revert the button content back to "Start" when the assistant stops speaking
+            voiceButton.textContent = "STOP";
+            if (voiceButton.textContent === "STOP" && !manuallyStopped) {
+                console.log("Attempting to restart recognition...");
+                recognition.start();  // Restart recognition after speaking is done only if not manually stopped
+            }
+            return;
+        }
         let chunk = chunks.shift();
         let utterance = new SpeechSynthesisUtterance(chunk);
         utterance.voice = voice;
@@ -176,8 +185,6 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
             setTimeout(() => {
         speakChunk(); // Continue with the next chunk
         if (chunks.length === 0) {
-             // Revert the button content back to "Start" when the assistant stops speaking
-            voiceButton.textContent = "STOP";
             // If no more chunks are left, restart the recognition after a delay
             setTimeout(() => {
                 if (voiceButton.textContent === "STOP" && !manuallyStopped) {
@@ -192,7 +199,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
         };
         synth.speak(utterance);
     };
-    speakChunk(); 
+    speakChunk();  
 }
 
 const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"]; // and so on...
