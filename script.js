@@ -39,13 +39,7 @@ recognition.onend = () => {
     recognitionActive = false;
     if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
         programmaticRestart = true;
-        recognition.start();
-    } else if (assistantFinishedSpeaking) {
-        assistantFinishedSpeaking = false;
-        recognition.start();
-        displayMessage("Listening...", "user");
-    }
-    
+        recognition.start();    
 };
 
 // Helper function to check if a message starts with a wake-up phrase
@@ -189,7 +183,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     let speakChunk = () => {
         if (chunks.length === 0) {
             voiceButton.textContent = "STOP";
-            assistantFinishedSpeaking = true;
+            displayMessage("Listening...", "user");
             return;
         }
         let chunk = chunks.shift();
