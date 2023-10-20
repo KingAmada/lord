@@ -188,6 +188,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
             // All chunks have been spoken, now we can restart the recognition
             if (!manuallyStopped) {
                 console.log("Attempting to restart recognition...");
+                programmaticRestart = true;
                 recognition.start();
             }
             return;
