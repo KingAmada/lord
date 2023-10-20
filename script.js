@@ -31,7 +31,10 @@ recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
-    recognitionActive = false;
+    if (!manuallyStopped) {
+        console.log("Speech recognition ended unexpectedly. Restarting...");
+        recognition.start();
+    }
 };
 
 // Helper function to check if a message starts with a wake-up phrase
