@@ -33,7 +33,7 @@ recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
      //recognitionActive = false;
     if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
-        recognition.start();
+     //   recognition.start();
     }
     
 };
