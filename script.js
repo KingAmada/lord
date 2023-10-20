@@ -7,6 +7,8 @@ const RECOGNITION_TIMEOUT = 1000;  // Set to 1 second for faster processing
 const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
 let isAwakened = false;
 let inactivityTimeout;
+let programmaticRestart = false;
+
 
 const WAKE_UP_PHRASES = ["Hi"];
 
@@ -25,15 +27,19 @@ recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
 recognition.onresult = handleRecognitionResult;
-recognition.onaudiostart = () => { console.log("Audio capturing started");  displayMessage("Listening...", "user");};
+recognition.onaudiostart = () => { console.log("Audio capturing started");  if (!programmaticRestart) {
+        displayMessage("Listening...", "user");
+    }
+    programmaticRestart = false;};
 recognition.onsoundstart = () => { console.log("Some sound is being received"); };
 recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
-     //recognitionActive = false;
+     recognitionActive = false;
+    programmaticRestart = true;
     if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
-     //   recognition.start();
+        recognition.start();
     }
     
 };
