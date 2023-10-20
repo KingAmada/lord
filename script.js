@@ -31,9 +31,11 @@ recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
-    if (!isAwakened) {
-        recognition.start(); // If system is in "sleep" mode, keep listening for wake word
+     recognitionActive = false;
+    if (voiceButton.textContent === "Stop" && !synth.speaking && !manuallyStopped) {
+        recognition.start();
     }
+    
 };
 
 // Helper function to check if a message starts with a wake-up phrase
