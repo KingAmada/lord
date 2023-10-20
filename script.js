@@ -31,9 +31,8 @@ recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
-    if (!manuallyStopped) {
-        console.log("Speech recognition ended unexpectedly. Restarting...");
-        recognition.start();
+    if (!isAwakened) {
+        recognition.start(); // If system is in "sleep" mode, keep listening for wake word
     }
 };
 
