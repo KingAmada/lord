@@ -31,7 +31,7 @@ recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
-     recognitionActive = false;
+     //recognitionActive = false;
     if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
         recognition.start();
     }
