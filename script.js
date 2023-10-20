@@ -8,7 +8,7 @@ const INACTIVITY_DURATION = 90000; // 1 minute 30 seconds in milliseconds
 let isAwakened = false;
 let inactivityTimeout;
 let programmaticRestart = false;
-
+let assistantFinishedSpeaking = false;
 
 const WAKE_UP_PHRASES = ["Hi"];
 
@@ -36,10 +36,14 @@ recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
 recognition.onend = () => {
-     recognitionActive = false;
-    programmaticRestart = true;
+    recognitionActive = false;
     if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
+        programmaticRestart = true;
         recognition.start();
+    } else if (assistantFinishedSpeaking) {
+        assistantFinishedSpeaking = false;
+        recognition.start();
+        displayMessage("Listening...", "user");
     }
     
 };
@@ -185,12 +189,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     let speakChunk = () => {
         if (chunks.length === 0) {
             voiceButton.textContent = "STOP";
-            // All chunks have been spoken, now we can restart the recognition
-            if (!manuallyStopped) {
-                console.log("Attempting to restart recognition...");
-                programmaticRestart = true;
-                recognition.start();
-            }
+            assistantFinishedSpeaking = true;
             return;
         }
         let chunk = chunks.shift();
