@@ -174,7 +174,7 @@ voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif"
     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
-            voiceButtotartn.textContent = "STOP";
+            voiceButton.textContent = "STOP";
             // All chunks have been spoken, now we can restart the recognition
             if (!manuallyStopped) {
                 console.log("Attempting to restart recognition...");
