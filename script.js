@@ -35,8 +35,7 @@ recognition.onsoundstart = () => { console.log("Some sound is being received"); 
 recognition.onspeechstart = () => { console.log("Speech has been detected"); };
 
 recognition.onstart = () => { recognitionActive = true; };
-recognition.onend = () => {
-    recognitionActive = false;
+recognition.onend = () => {recognitionActive = false;
     if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
         programmaticRestart = true;
         recognition.start();    }
@@ -175,15 +174,19 @@ function speakText(text, synth) {
 }
 
 function speakUsingVoice(text, voice, synth) {
-    if (synth.speaking) {
+     if (synth.speaking) {
         synth.cancel();
     }
-voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
+    voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
     let chunks = text.split(/(?<=[.!?])\s+/);
     let speakChunk = () => {
         if (chunks.length === 0) {
             voiceButton.textContent = "STOP";
-            displayMessage("Listening...", "user");
+            if (!manuallyStopped) {
+                programmaticRestart = true;
+                recognition.start();
+                displayMessage("Listening...", "user");
+            }
             return;
         }
         let chunk = chunks.shift();
