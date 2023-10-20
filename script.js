@@ -39,7 +39,7 @@ recognition.onend = () => {
     recognitionActive = false;
     if (voiceButton.textContent === "STOP" && !synth.speaking && !manuallyStopped) {
         programmaticRestart = true;
-        recognition.start();    
+        recognition.start();    }
 };
 
 // Helper function to check if a message starts with a wake-up phrase
