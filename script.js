@@ -128,17 +128,34 @@
             speakText(text, synth);
         }
     }
-
+    function setVoiceButtonState(state) {
+        const voiceButton = document.getElementById("voice-btn");
+        if (state === "START") {
+            voiceButton.textContent = "START";
+            voiceButton.classList.remove("active");
+        } else if (state === "STOP") {
+            voiceButton.textContent = "STOP";
+            voiceButton.classList.add("active");
+        } else if (state === "LISTENING") {
+            voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
+        }
+    }
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
         if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
             manuallyStopped = false;
+           if (recognition) {
             recognition.start();
             voiceButton.textContent = "STOP";
             setActiveMode();
-        } else {
+        }  else {
+                console.error("Speech Recognition is not supported in this browser.");
+           }
+        }else {
             manuallyStopped = true;
+            if (recognition) {
             recognition.stop();
+            }
             voiceButton.textContent = "START";
             document.getElementById("voice-btn").classList.remove("active");
             const messageList = document.getElementById("message-list");
@@ -184,6 +201,16 @@
         };
 
         speakChunk();
+        synth.onvoiceschanged = () => {
+            setVoiceButtonState("STOP");
+            if (!manuallyStopped) {
+                programmaticRestart = true;
+                if (recognition) {
+                    recognition.start();
+                }
+                displayMessage("Listening...", "user");
+            }
+            };
     }
 
     const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"];
