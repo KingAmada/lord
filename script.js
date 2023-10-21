@@ -154,6 +154,7 @@
     }
 
     function speakText(text, synth) {
+        recognition.stop();
         if (synth.speaking) {
             synth.cancel();
         }
