@@ -167,11 +167,9 @@
         if (state === "START") {
             voiceButton.textContent = "START";
             voiceButton.classList.remove("active");
-            setVoiceButtonState("STOP");
         } else if (state === "STOP") {
             voiceButton.textContent = "STOP";
             voiceButton.classList.add("active");
-            setVoiceButtonState("START");
         } else if (state === "LISTENING") {
             voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
         }
