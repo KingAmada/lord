@@ -31,12 +31,13 @@
     };
     recognition.onsoundstart = () => { console.log("Some sound is being received"); };
     recognition.onspeechstart = () => { console.log("Speech has been detected"); };
-    recognition.onstart = () => { recognitionActive = true; };
+    recognition.onstart = () => { recognitionActive = true; setVoiceButtonState("STOP"); };
     recognition.onend = () => {
         recognitionActive = false;
         if (isVoiceButtonActive() && !manuallyStopped) {
             programmaticRestart = true;
             recognition.start();
+            setVoiceButtonState("START");
         }
     };
 
@@ -142,13 +143,16 @@
     }
 
     const audioData = await response.blob();
-
+ setVoiceButtonState("LISTENING");
     // Play the audio blob with an audio element
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
     audio.play();
 
     // Update the UI to reflect that the assistant has finished speaking
+      audio.onended = () => {
+        setVoiceButtonState("START");
+    };
     const voiceButton = document.getElementById("voice-btn");
     if (voiceButton) {
       voiceButton.textContent = "START";
@@ -163,9 +167,11 @@
         if (state === "START") {
             voiceButton.textContent = "START";
             voiceButton.classList.remove("active");
+            setVoiceButtonState("STOP");
         } else if (state === "STOP") {
             voiceButton.textContent = "STOP";
             voiceButton.classList.add("active");
+            setVoiceButtonState("START");
         } else if (state === "LISTENING") {
             voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
         }
