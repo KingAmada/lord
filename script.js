@@ -119,7 +119,7 @@
         return messageItem;
     }
 
-    function textToSpeech(text) {
+  async function textToSpeech(text) {
        const apiKey = 'YOUR_OPENAI_API_KEY'; // Replace with your actual API key
   const endpoint = 'https://api.openai.com/v1/audio/speech';
 
