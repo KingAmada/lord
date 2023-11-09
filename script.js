@@ -1,7 +1,6 @@
 (function() {
     // Initialization
     let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
-    let synth = window.speechSynthesis;
     let manuallyStopped = false;
     let recognitionActive = false;
     const RECOGNITION_TIMEOUT = 1000;  
@@ -35,7 +34,7 @@
     recognition.onstart = () => { recognitionActive = true; };
     recognition.onend = () => {
         recognitionActive = false;
-        if (isVoiceButtonActive() && !synth.speaking && !manuallyStopped) {
+        if (isVoiceButtonActive() && !manuallyStopped) {
             programmaticRestart = true;
             recognition.start();
         }
@@ -196,54 +195,7 @@
             }
         }
     });
-
-    function getPreferredVoiceName() {
-        return /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent) ? "Google US English" : "Samantha";
-    }
-
-    function speakText(text, synth) {
-        recognition.stop();
-        if (synth.speaking) {
-            synth.cancel();
-        }
-        voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
-        const voiceName = getPreferredVoiceName();
-        const targetVoice = synth.getVoices().find(voice => voice.name === voiceName) || synth.getVoices()[0];
-        
-        let chunks = text.split(/(?<=[.!?])\s+/);
-        let speakChunk = () => {
-            if (chunks.length === 0) {
-                voiceButton.textContent = "STOP";
-                if (!manuallyStopped) {
-                    programmaticRestart = true;
-                    recognition.start();
-                    displayMessage("Listening...", "user");
-                }
-                return;
-            }
-            let chunk = chunks.shift();
-            let utterance = new SpeechSynthesisUtterance(chunk);
-            utterance.voice = targetVoice;
-            utterance.rate = 1.1;
-            utterance.onend = () => {
-                setTimeout(speakChunk, 7);
-            };
-            synth.speak(utterance);
-        };
-
-        speakChunk();
-        synth.onvoiceschanged = () => {
-            setVoiceButtonState("STOP");
-            if (!manuallyStopped) {
-                programmaticRestart = true;
-                if (recognition) {
-                    recognition.start();
-                }
-                displayMessage("Listening...", "user");
-            }
-            };
-    }
-
+   
     const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"];
 
     async function getChatCompletion(prompt, modelIndex = 0) {
