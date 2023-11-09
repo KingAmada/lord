@@ -31,14 +31,17 @@
     };
     recognition.onsoundstart = () => { console.log("Some sound is being received"); };
     recognition.onspeechstart = () => { console.log("Speech has been detected"); };
-    recognition.onstart = () => { recognitionActive = true; setVoiceButtonState("STOP"); };
+    recognition.onstart = () => { recognitionActive = true;
+    setVoiceButtonState("STOP");
+    setActiveMode();};
     recognition.onend = () => {
-        recognitionActive = false;
-        if (isVoiceButtonActive() && !manuallyStopped) {
-            programmaticRestart = true;
-            recognition.start();
-            setVoiceButtonState("START");
-        }
+         recognitionActive = false;
+    if (!manuallyStopped && !synth.speaking) {
+        // Only restart the recognition if not manually stopped and TTS is not active
+        recognition.start();
+    } else {
+        setVoiceButtonState("START");
+    }
     };
 
     function isVoiceButtonActive() {
@@ -145,13 +148,16 @@
     const audioData = await response.blob();
  setVoiceButtonState("LISTENING");
     // Play the audio blob with an audio element
+      // Call onTTStart function here to handle TTS start
+    onTTStart();
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
     audio.play();
 
     // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
-        setVoiceButtonState("START");
+         // Call onTTEnd function here to handle TTS end
+      onTTEnd();
     };
     const voiceButton = document.getElementById("voice-btn");
     if (voiceButton) {
@@ -162,42 +168,49 @@
     console.error('There was an error with the text-to-speech request:', error);
   }
 }
+    // When TTS starts
+function onTTStart() {
+    setVoiceButtonState("LISTENING");
+    // Disable the voice button to prevent recognition from starting
+    document.getElementById("voice-btn").disabled = true;
+}
+
+// When TTS ends
+function onTTEnd() {
+    setVoiceButtonState("START");
+    // Re-enable the voice button
+    document.getElementById("voice-btn").disabled = false;
+    if (isAwakened && !manuallyStopped) {
+        recognition.start();
+    }
+}
     function setVoiceButtonState(state) {
-        const voiceButton = document.getElementById("voice-btn");
-        if (state === "START") {
-            voiceButton.textContent = "START";
-            voiceButton.classList.remove("active");
-        } else if (state === "STOP") {
-            voiceButton.textContent = "STOP";
-            voiceButton.classList.add("active");
+         const voiceButton = document.getElementById("voice-btn");
+    if (state === "START") {
+        voiceButton.textContent = "START";
+        voiceButton.classList.remove("active", "listening", "speaking");
+    } else if (state === "STOP") {
+        voiceButton.textContent = "STOP";
+        voiceButton.classList.add("active");
         } else if (state === "LISTENING") {
             voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
+        voiceButton.classList.add("listening");
         }
     }
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
-        if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
-            manuallyStopped = false;
-           if (recognition) {
-            recognition.start();
-            voiceButton.textContent = "STOP";
-            setActiveMode();
-        }  else {
-                console.error("Speech Recognition is not supported in this browser.");
-           }
-        }else {
-            manuallyStopped = true;
-            if (recognition) {
-            recognition.stop();
-            }
-            voiceButton.textContent = "START";
-            document.getElementById("voice-btn").classList.remove("active");
-            const messageList = document.getElementById("message-list");
-            const lastMessage = messageList.lastChild;
-            if (lastMessage && lastMessage.textContent === "Listening...") {
-                messageList.removeChild(lastMessage);
-            }
+      if (voiceButton.textContent === "START") {
+        manuallyStopped = false;
+        recognition.start();
+        // setActiveMode(); // Should be called only after recognition starts successfully
+    } else {
+        manuallyStopped = true;
+        recognition.stop();
+        // Consider setting the button state to "START" here only if the TTS is not speaking
+        if (!synth.speaking) {
+            setVoiceButtonState("START");
         }
+    }
     });
    
     const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"];
