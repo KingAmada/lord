@@ -119,7 +119,7 @@
     }
 
   async function textToSpeech(text) {
-  const endpoint = 'https://lord-nine.vercel.app/api/openaiProxy';
+  const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
 
   try {
     const response = await fetch(endpoint, {
@@ -206,7 +206,7 @@
 
         const currentModel = MODEL_PRIORITY[modelIndex];
         conversationHistory.push({ role: "system", content: prompt });
-        const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
+        const endpoint = "https://lordne.vercel.app/api/openaiProxy";
         const payload = {
              type: 'chat', // Indicate that this is a chat request
     data: { // Data for the chat completion request
