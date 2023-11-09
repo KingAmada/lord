@@ -120,7 +120,7 @@
     }
 
   async function textToSpeech(text) {
-  const endpoint = 'https://your-vercel-domain/api/openaiProxy';
+  const endpoint = 'https://lord-nine.vercel.app/api/openaiProxy';
 
   try {
     const response = await fetch(endpoint, {
