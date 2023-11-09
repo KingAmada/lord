@@ -36,7 +36,7 @@
     setActiveMode();};
     recognition.onend = () => {
          recognitionActive = false;
-    if (!manuallyStopped && !synth.speaking) {
+    if (!manuallyStopped) {
         // Only restart the recognition if not manually stopped and TTS is not active
         recognition.start();
     } else {
@@ -207,9 +207,9 @@ function onTTEnd() {
         manuallyStopped = true;
         recognition.stop();
         // Consider setting the button state to "START" here only if the TTS is not speaking
-        if (!synth.speaking) {
+      //  if (!synth.speaking) {
             setVoiceButtonState("START");
-        }
+      //  }
     }
     });
    
