@@ -132,7 +132,7 @@
       },
       body: JSON.stringify({
         model: "tts-1",
-        voice: voice,
+        voice: alloy,
         input: text
       })
     });
