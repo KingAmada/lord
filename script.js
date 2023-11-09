@@ -120,13 +120,46 @@
     }
 
     function textToSpeech(text) {
-        if (synth.getVoices().length === 0) {
-            synth.onvoiceschanged = () => {
-                speakText(text, synth);
-            };
-        } else {
-            speakText(text, synth);
-        }
+       const apiKey = 'YOUR_OPENAI_API_KEY'; // Replace with your actual API key
+  const endpoint = 'https://api.openai.com/v1/audio/speech';
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: "tts-1",
+        voice: voice,
+        input: text
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const audioData = await response.blob();
+
+    // Play the audio blob with an audio element
+    const audioUrl = URL.createObjectURL(audioData);
+    const audio = new Audio(audioUrl);
+    audio.play();
+
+    // Update the UI to reflect that the assistant has finished speaking
+    assistantFinishedSpeaking = true;
+    // You might need to update the UI according to your application's needs
+    // For example, you could change the button to show that the assistant is ready to listen again
+    const voiceButton = document.getElementById("voice-btn");
+    if (voiceButton) {
+        voiceButton.textContent = "START";
+        voiceButton.classList.remove("active");
+    }
+  } catch (error) {
+    console.error('There was an error with the text-to-speech request:', error);
+  }
     }
     function setVoiceButtonState(state) {
         const voiceButton = document.getElementById("voice-btn");
