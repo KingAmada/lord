@@ -256,9 +256,11 @@
         conversationHistory.push({ role: "system", content: prompt });
         const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
         const payload = {
-          //  type: 'chat',
-            model: currentModel,
-            messages: conversationHistory
+             type: 'chat', // Indicate that this is a chat request
+    data: { // Data for the chat completion request
+      model: currentModel,
+      messages: conversationHistory
+    }
         };
 
         try {
