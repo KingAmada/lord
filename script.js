@@ -31,12 +31,11 @@
     recognition.onsoundstart = () => { console.log("Some sound is being received"); };
     recognition.onspeechstart = () => { console.log("Speech has been detected"); };
     recognition.onstart = () => { 
-        isRecognitionActive = true;
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
-        startRecognition();
   if (!manuallyStopped && isRecognitionActive) {
+          console.log("Recognition ended, attempting to restart.");
     // Only restart the recognition if not manually stopped and TTS is not active
     startRecognition();
   } else {
@@ -77,19 +76,28 @@
         }
     }
 function startRecognition() {
-  if (!isRecognitionActive) {
-    recognition.start();
-    isRecognitionActive = true;
-    setVoiceButtonState("STOP");
-  }
+    // Check if the recognition is already active to prevent double-start errors
+    if (!isRecognitionActive) {
+        try {
+            recognition.start();
+            isRecognitionActive = true;
+            console.log("Recognition started.");
+            setVoiceButtonState("STOP");
+        } catch (e) {
+            // Handle the error, e.g., if the recognition is already started
+            console.error("Error starting recognition:", e);
+        }
+    }
 }
 
 function stopRecognition() {
-  if (isRecognitionActive) {
-    recognition.stop();
-    isRecognitionActive = false;
-    setVoiceButtonState("START");
-  }
+    // Only attempt to stop if the recognition is currently active
+    if (isRecognitionActive) {
+        recognition.stop();
+        isRecognitionActive = false;
+        console.log("Recognition stopped.");
+        setVoiceButtonState("START");
+    }
 }
     function processCommand(command) {
         getChatCompletion(command).then(displayAndSpeak);
@@ -156,6 +164,7 @@ function stopRecognition() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 isRecognitionActive = false;
+      setVoiceButtonState("LISTENING");
     const audioData = await response.blob();
     // Play the audio blob with an audio element
     const audioUrl = URL.createObjectURL(audioData);
@@ -189,7 +198,7 @@ isRecognitionActive = false;
     }
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
-        if (isRecognitionActive) {
+        if (!voiceButton.textContent === "START") {
     manuallyStopped = true;
     stopRecognition();
   } else {
