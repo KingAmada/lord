@@ -182,7 +182,7 @@ function stopRecognition() {
          if (!manuallyStopped) {
              track=true;
     startRecognition();
-         displayMessage("Listening...", "user");
+        // displayMessage("Listening...", "user");
              isRecognitionActive = false;
          }
     };
