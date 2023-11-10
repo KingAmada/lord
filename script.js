@@ -80,7 +80,7 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
-    if (!isRecognitionActive) {
+    //if (!isRecognitionActive) {
         console.log("Recognition ended, attempting to restart second stage.");
         try {
             recognition.start();
@@ -91,17 +91,15 @@ function startRecognition() {
             // Handle the error, e.g., if the recognition is already started
             console.error("Error starting recognition:", e);
         }
-    }
+    //}
 }
 
 function stopRecognition() {
     // Only attempt to stop if the recognition is currently active
-    if (isRecognitionActive) {
         recognition.stop();
         isRecognitionActive = false;
         console.log("Recognition stopped.");
         setVoiceButtonState("START");
-    }
 }
     function processCommand(command) {
         getChatCompletion(command).then(displayAndSpeak);
