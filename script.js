@@ -174,10 +174,10 @@ function stopRecognition() {
     audio.play();
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
-         if (!manuallyStopped) {
+        // if (!manuallyStopped) {
     startRecognition();
              isRecognitionActive = false;
-         }
+        // }
     };
   } catch (error) {
     console.error('There was an error with the text-to-speech request:', error);
