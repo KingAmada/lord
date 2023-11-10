@@ -199,12 +199,12 @@ isRecognitionActive = false;
     }
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
-        if (voiceButton.textContent === "START") {
-     manuallyStopped = false;
-    startRecognition();
-  } else {
-            manuallyStopped = true;
+        if (isRecognitionActive) {
+    manuallyStopped = true;
     stopRecognition();
+  } else {
+    manuallyStopped = false;
+    startRecognition();
   }
     });
    
