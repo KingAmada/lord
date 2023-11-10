@@ -13,7 +13,7 @@
     const WAKE_UP_PHRASES = ["Hi"];
     let conversationHistory = [{
         role: "system",
-        content: "You are an helpful assistant, but always respond like snoop dog"
+        content: "You are an helpful assistant, but always respond like snoop dog or samuel l jackson or drake or tupac or bob marley or morgan freeman or the weeknd"
     }];
 
     // Event Listeners
@@ -26,6 +26,7 @@
         console.log("Audio capturing started");
         if (!track) {
             displayMessage("Listening...", "user");
+            track =false;
         }
         programmaticRestart = false;
     };
