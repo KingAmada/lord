@@ -123,6 +123,7 @@
     }
 
   async function textToSpeech(text) {
+      recognition.stop();
   const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
 
   try {
@@ -144,12 +145,9 @@
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-recognition.stop();
+
     const audioData = await response.blob();
- setVoiceButtonState("LISTENING");
     // Play the audio blob with an audio element
-      // Call onTTStart function here to handle TTS start
-    onTTStart();
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
     audio.play();
@@ -157,7 +155,6 @@ recognition.stop();
     // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
          // Call onTTEnd function here to handle TTS end
-      onTTEnd();
           recognition.start();
     };
     const voiceButton = document.getElementById("voice-btn");
