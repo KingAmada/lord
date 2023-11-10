@@ -2,7 +2,6 @@
     // Initialization
     let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
     let manuallyStopped = false;
-    let recognitionActive = false;
     const RECOGNITION_TIMEOUT = 1000;  
     const INACTIVITY_DURATION = 90000; 
     let isAwakened = false;
@@ -20,7 +19,6 @@
     recognition.lang = 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-
     recognition.onresult = handleRecognitionResult;
     recognition.onaudiostart = () => { 
         console.log("Audio capturing started");
@@ -31,11 +29,10 @@
     };
     recognition.onsoundstart = () => { console.log("Some sound is being received"); };
     recognition.onspeechstart = () => { console.log("Speech has been detected"); };
-    recognition.onstart = () => { recognitionActive = true;
+    recognition.onstart = () => { 
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
-         recognitionActive = false;
     if (!manuallyStopped) {
         // Only restart the recognition if not manually stopped and TTS is not active
         recognition.start();
@@ -44,10 +41,6 @@
     }
     };
 
-    function isVoiceButtonActive() {
-        const voiceButton = document.getElementById("voice-btn");
-        return voiceButton && voiceButton.textContent === "STOP";
-    }
 
     function startsWithWakeUpPhrase(message) {
         return WAKE_UP_PHRASES.some(phrase => message.toLowerCase().startsWith(phrase));
@@ -157,31 +150,11 @@
          // Call onTTEnd function here to handle TTS end
           recognition.start();
     };
-    const voiceButton = document.getElementById("voice-btn");
-    if (voiceButton) {
-      voiceButton.textContent = "START";
-      voiceButton.classList.remove("active");
-    }
   } catch (error) {
     console.error('There was an error with the text-to-speech request:', error);
   }
 }
-    // When TTS starts
-function onTTStart() {
-    setVoiceButtonState("LISTENING");
-    // Disable the voice button to prevent recognition from starting
-    document.getElementById("voice-btn").disabled = true;
-}
 
-// When TTS ends
-function onTTEnd() {
-    setVoiceButtonState("START");
-    // Re-enable the voice button
-    document.getElementById("voice-btn").disabled = false;
-    if (isAwakened && !manuallyStopped) {
-        recognition.start();
-    }
-}
     function setVoiceButtonState(state) {
          const voiceButton = document.getElementById("voice-btn");
     if (state === "START") {
@@ -200,14 +173,11 @@ function onTTEnd() {
       if (voiceButton.textContent === "START") {
         manuallyStopped = false;
         recognition.start();
-        // setActiveMode(); // Should be called only after recognition starts successfully
+       setVoiceButtonState("STOP");
     } else {
         manuallyStopped = true;
         recognition.stop();
-        // Consider setting the button state to "START" here only if the TTS is not speaking
-      //  if (!synth.speaking) {
             setVoiceButtonState("START");
-      //  }
     }
     });
    
