@@ -16,7 +16,7 @@
     }];
 
     // Event Listeners
-    recognition.continuous = true;
+    recognition.continuous = false;
     recognition.lang = 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
