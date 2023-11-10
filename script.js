@@ -149,6 +149,7 @@ recognition.stop();
     // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
          // Call onTTEnd function here to handle TTS end
+          displayMessage("Listening...", "user");
           recognition.start();
     };
   } catch (error) {
