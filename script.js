@@ -145,9 +145,7 @@ function stopRecognition() {
     }
 
   async function textToSpeech(text) {
-      
   const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
-
   try {
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -176,16 +174,6 @@ function stopRecognition() {
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
     audio.play();
-
-    // Update the UI to reflect that the assistant has finished speaking
-      audio.onended = () => {
-         if (!manuallyStopped) {
-             track=true;
-    startRecognition();
-        // displayMessage("Listening...", "user");
-             isRecognitionActive = false;
-         }
-    };
   } catch (error) {
     console.error('There was an error with the text-to-speech request:', error);
   }
@@ -206,12 +194,17 @@ function stopRecognition() {
     }
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
-        if (isRecognitionActive) {
-    manuallyStopped = true;
-    stopRecognition();
-  } else {
+        if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
     manuallyStopped = false;
     startRecognition();
+  } else {
+    manuallyStopped = true;
+    stopRecognition();
+            const messageList = document.getElementById("message-list");
+            const lastMessage = messageList.lastChild;
+            if (lastMessage && lastMessage.textContent === "Listening...") {
+                messageList.removeChild(lastMessage);
+            }
   }
     });
    
