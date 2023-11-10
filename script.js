@@ -36,7 +36,7 @@
     recognition.onend = () => {
   if (!manuallyStopped && isRecognitionActive) {
       programmaticRestart = true;
-      // isRecognitionActive = false;
+      
           console.log("Recognition ended, attempting to restart.");
     // Only restart the recognition if not manually stopped and TTS is not active
     startRecognition();
@@ -180,6 +180,7 @@ isRecognitionActive = false;
          if (!manuallyStopped) {
     startRecognition();
          displayMessage("Listening...", "user");
+             isRecognitionActive = false;
          }
     };
   } catch (error) {
