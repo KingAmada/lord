@@ -80,7 +80,6 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
-    
     if (!isRecognitionActive) {
         console.log("Recognition ended, attempting to restart second stage.");
         try {
@@ -168,8 +167,9 @@ function stopRecognition() {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-isRecognitionActive = false;
+
       stopRecognition();
+      isRecognitionActive = false;
       setVoiceButtonState("LISTENING");
     const audioData = await response.blob();
     // Play the audio blob with an audio element
