@@ -77,6 +77,7 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors
+    console.log("Recognition ended, attempting to restart second stage.");
     if (!isRecognitionActive) {
         try {
             recognition.start();
@@ -198,12 +199,12 @@ isRecognitionActive = false;
     }
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
-        if (!voiceButton.textContent === "START") {
-    manuallyStopped = true;
-    stopRecognition();
-  } else {
-    manuallyStopped = false;
+        if (voiceButton.textContent === "START") {
+     manuallyStopped = false;
     startRecognition();
+  } else {
+            manuallyStopped = true;
+    stopRecognition();
   }
     });
    
