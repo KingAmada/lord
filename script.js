@@ -174,6 +174,13 @@ function stopRecognition() {
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
     audio.play();
+       // Update the UI to reflect that the assistant has finished speaking
+      audio.onended = () => {
+         if (!manuallyStopped) {
+    startRecognition();
+             isRecognitionActive = false;
+         }
+    };
   } catch (error) {
     console.error('There was an error with the text-to-speech request:', error);
   }
