@@ -13,7 +13,7 @@
     const WAKE_UP_PHRASES = ["Hi"];
     let conversationHistory = [{
         role: "system",
-        content: "You are an helpful assistant"
+        content: "You are an helpful assistant, but always respond like snoop dog"
     }];
 
     // Event Listeners
@@ -35,8 +35,7 @@
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
-  if (!manuallyStopped && isRecognitionActive) {
-        
+  if (!manuallyStopped) {
       programmaticRestart = true;
           console.log("Recognition ended, attempting to restart.");
     // Only restart the recognition if not manually stopped and TTS is not active
