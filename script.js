@@ -24,7 +24,7 @@
     recognition.onresult = handleRecognitionResult;
     recognition.onaudiostart = () => { 
         console.log("Audio capturing started");
-        if (!programmaticRestart) {
+        if (!track) {
             displayMessage("Listening...", "user");
         }
         programmaticRestart = false;
@@ -80,7 +80,7 @@ function startRecognition() {
         console.log("Recognition ended, attempting to restart second stage.");
         try {
             recognition.start();
-            isRecognitionActive = true;
+            //isRecognitionActive = true;
             console.log("Recognition started.");
             setVoiceButtonState("STOP");
         } catch (e) {
@@ -171,8 +171,9 @@ function stopRecognition() {
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
          if (!manuallyStopped) {
+             track=true;
     startRecognition();
-//             isRecognitionActive = false;
+       //     isRecognitionActive = false;
          }
     };
   } catch (error) {
