@@ -164,7 +164,7 @@ isRecognitionActive = false;
       audio.onended = () => {
          if (!manuallyStopped) {
     startRecognition();
-          displayMessage("Listening...", "user");
+         // displayMessage("Listening...", "user");
          }
     };
   } catch (error) {
