@@ -173,7 +173,7 @@ function stopRecognition() {
          if (!manuallyStopped) {
              track=true;
     startRecognition();
-       //     isRecognitionActive = false;
+           isRecognitionActive = false;
          }
     };
   } catch (error) {
