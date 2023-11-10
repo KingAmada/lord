@@ -31,6 +31,7 @@
     recognition.onsoundstart = () => { console.log("Some sound is being received"); };
     recognition.onspeechstart = () => { console.log("Speech has been detected"); };
     recognition.onstart = () => { 
+        isRecognitionActive = true;
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
