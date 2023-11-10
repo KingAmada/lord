@@ -36,11 +36,12 @@
     setActiveMode();};
     recognition.onend = () => {
   if (!manuallyStopped && isRecognitionActive) {
-        isRecognitionActive = false;
+        
       programmaticRestart = true;
           console.log("Recognition ended, attempting to restart.");
     // Only restart the recognition if not manually stopped and TTS is not active
     startRecognition();
+      isRecognitionActive = false;
   } else {
     stopRecognition();
   }
