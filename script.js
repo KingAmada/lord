@@ -36,6 +36,7 @@
     if (!manuallyStopped) {
         // Only restart the recognition if not manually stopped and TTS is not active
         recognition.start();
+        programmaticRestart = true;
     } else {
         setVoiceButtonState("START");
     }
@@ -116,7 +117,7 @@
     }
 
   async function textToSpeech(text) {
-      recognition.stop();
+      
   const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
 
   try {
@@ -138,7 +139,7 @@
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
+recognition.stop();
     const audioData = await response.blob();
     // Play the audio blob with an audio element
     const audioUrl = URL.createObjectURL(audioData);
