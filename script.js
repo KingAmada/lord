@@ -35,6 +35,7 @@
     setActiveMode();};
     recognition.onend = () => {
   if (!manuallyStopped && isRecognitionActive) {
+       isRecognitionActive = false;
           console.log("Recognition ended, attempting to restart.");
     // Only restart the recognition if not manually stopped and TTS is not active
     startRecognition();
@@ -77,8 +78,9 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors
-    console.log("Recognition ended, attempting to restart second stage.");
+    
     if (!isRecognitionActive) {
+        console.log("Recognition ended, attempting to restart second stage.");
         try {
             recognition.start();
             isRecognitionActive = true;
