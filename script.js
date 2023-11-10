@@ -76,7 +76,7 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
-    //if (!isRecognitionActive) {
+    if (!isRecognitionActive) {
         console.log("Recognition ended, attempting to restart second stage.");
         try {
             recognition.start();
@@ -87,7 +87,7 @@ function startRecognition() {
             // Handle the error, e.g., if the recognition is already started
             console.error("Error starting recognition:", e);
         }
-    //}
+    }
 }
 
 function stopRecognition() {
@@ -172,7 +172,7 @@ function stopRecognition() {
       audio.onended = () => {
          if (!manuallyStopped) {
     startRecognition();
-             isRecognitionActive = false;
+//             isRecognitionActive = false;
          }
     };
   } catch (error) {
