@@ -38,12 +38,8 @@
   if (!manuallyStopped) {
       programmaticRestart = true;
           console.log("Recognition ended, attempting to restart.");
-    // Only restart the recognition if not manually stopped and TTS is not active
     startRecognition();
-      isRecognitionActive = false;
-  } else {
-    stopRecognition();
-  }
+  } 
     };
 
 
@@ -174,10 +170,10 @@ function stopRecognition() {
     audio.play();
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
-        // if (!manuallyStopped) {
+         if (!manuallyStopped) {
     startRecognition();
              isRecognitionActive = false;
-        // }
+         }
     };
   } catch (error) {
     console.error('There was an error with the text-to-speech request:', error);
