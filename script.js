@@ -168,6 +168,7 @@ function stopRecognition() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 isRecognitionActive = false;
+      stopRecognition();
       setVoiceButtonState("LISTENING");
     const audioData = await response.blob();
     // Play the audio blob with an audio element
