@@ -153,7 +153,7 @@ function stopRecognition() {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-recognition.stop();
+isRecognitionActive = false;
     const audioData = await response.blob();
     // Play the audio blob with an audio element
     const audioUrl = URL.createObjectURL(audioData);
