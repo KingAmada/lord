@@ -8,6 +8,7 @@
     let inactivityTimeout;
     let isRecognitionActive = false;
     let programmaticRestart = false;
+    let track = false;
 
     const WAKE_UP_PHRASES = ["Hi"];
     let conversationHistory = [{
@@ -35,8 +36,8 @@
     setActiveMode();};
     recognition.onend = () => {
   if (!manuallyStopped && isRecognitionActive) {
+        isRecognitionActive = false;
       programmaticRestart = true;
-      
           console.log("Recognition ended, attempting to restart.");
     // Only restart the recognition if not manually stopped and TTS is not active
     startRecognition();
@@ -78,7 +79,7 @@
         }
     }
 function startRecognition() {
-    // Check if the recognition is already active to prevent double-start errors
+    // Check if the recognition is already active to prevent double-start errors)
     
     if (!isRecognitionActive) {
         console.log("Recognition ended, attempting to restart second stage.");
@@ -179,6 +180,7 @@ isRecognitionActive = false;
     // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
          if (!manuallyStopped) {
+             track=true;
     startRecognition();
          displayMessage("Listening...", "user");
              isRecognitionActive = false;
