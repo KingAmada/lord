@@ -34,6 +34,7 @@
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
+        startRecognition();
   if (!manuallyStopped && isRecognitionActive) {
     // Only restart the recognition if not manually stopped and TTS is not active
     startRecognition();
