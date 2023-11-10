@@ -144,7 +144,7 @@
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
+recognition.stop();
     const audioData = await response.blob();
  setVoiceButtonState("LISTENING");
     // Play the audio blob with an audio element
@@ -158,6 +158,7 @@
       audio.onended = () => {
          // Call onTTEnd function here to handle TTS end
       onTTEnd();
+          recognition.start();
     };
     const voiceButton = document.getElementById("voice-btn");
     if (voiceButton) {
@@ -188,7 +189,7 @@ function onTTEnd() {
          const voiceButton = document.getElementById("voice-btn");
     if (state === "START") {
         voiceButton.textContent = "START";
-        voiceButton.classList.remove("active", "listening", "speaking");
+        voiceButton.classList.remove("active", "listening");
     } else if (state === "STOP") {
         voiceButton.textContent = "STOP";
         voiceButton.classList.add("active");
