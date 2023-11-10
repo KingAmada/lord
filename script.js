@@ -6,6 +6,7 @@
     const INACTIVITY_DURATION = 90000; 
     let isAwakened = false;
     let inactivityTimeout;
+    let isRecognitionActive = false;
     let programmaticRestart = false;
 
     const WAKE_UP_PHRASES = ["Hi"];
@@ -33,13 +34,12 @@
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
-    if (!manuallyStopped) {
-        // Only restart the recognition if not manually stopped and TTS is not active
-        recognition.start();
-        programmaticRestart = true;
-    } else {
-        setVoiceButtonState("START");
-    }
+  if (!manuallyStopped && isRecognitionActive) {
+    // Only restart the recognition if not manually stopped and TTS is not active
+    startRecognition();
+  } else {
+    stopRecognition();
+  }
     };
 
 
@@ -74,7 +74,21 @@
             processCommand(userMessage);
         }
     }
+function startRecognition() {
+  if (!isRecognitionActive) {
+    recognition.start();
+    isRecognitionActive = true;
+    setVoiceButtonState("STOP");
+  }
+}
 
+function stopRecognition() {
+  if (isRecognitionActive) {
+    recognition.stop();
+    isRecognitionActive = false;
+    setVoiceButtonState("START");
+  }
+}
     function processCommand(command) {
         getChatCompletion(command).then(displayAndSpeak);
         resetActiveTimer();
@@ -148,9 +162,10 @@ recognition.stop();
 
     // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
-         // Call onTTEnd function here to handle TTS end
+         if (!manuallyStopped) {
+    startRecognition();
           displayMessage("Listening...", "user");
-          recognition.start();
+         }
     };
   } catch (error) {
     console.error('There was an error with the text-to-speech request:', error);
@@ -172,15 +187,13 @@ recognition.stop();
     }
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
-      if (voiceButton.textContent === "START") {
-        manuallyStopped = false;
-        recognition.start();
-       setVoiceButtonState("STOP");
-    } else {
-        manuallyStopped = true;
-        recognition.stop();
-            setVoiceButtonState("START");
-    }
+        if (isRecognitionActive) {
+    manuallyStopped = true;
+    stopRecognition();
+  } else {
+    manuallyStopped = false;
+    startRecognition();
+  }
     });
    
     const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"];
