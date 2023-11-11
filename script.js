@@ -196,7 +196,7 @@
 
         const currentModel = MODEL_PRIORITY[modelIndex];
         conversationHistory.push({ role: "system", content: prompt });
-        const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
+        const endpoint = "https://lordne.vercel.app/api/openaiProxy";
         const payload = {
             model: currentModel,
             messages: conversationHistory
