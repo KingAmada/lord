@@ -195,34 +195,41 @@
     const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"];
 
     async function getChatCompletion(prompt) {
-        for (let modelIndex = 0; modelIndex < MODEL_PRIORITY.length; modelIndex++) {
-            try {
-                const currentModel = MODEL_PRIORITY[modelIndex];
-                conversationHistory.push({ role: "user", content: prompt });
-                const endpoint = "https://lordne.vercel.app/api/openaiProxy";
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        type: 'chat',
-                        data: { model: currentModel, messages: conversationHistory }
-                    })
-                });
+    const currentModel = "gpt-4"; // Use the preferred model
+    conversationHistory.push({ role: "user", content: prompt });
 
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
-                }
+    const endpoint = "https://lordne.vercel.app/api/openaiProxy";
+    const payload = {
+        type: 'chat',
+        data: { model: currentModel, messages: conversationHistory }
+    };
 
-                const jsonResponse = await response.json();
-                const assistantReply = jsonResponse.choices[0].message.content;
-                conversationHistory.push({ role: "assistant", content: assistantReply });
-                return assistantReply;
-            } catch (error) {
-                console.warn(`Error using model ${MODEL_PRIORITY[modelIndex]}. Error: ${error.message}`);
-                if (modelIndex === MODEL_PRIORITY.length - 1) {
-                    return "Sorry, I encountered an error. Please try again later.";
-                }
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            if (response.status === 429) {
+                // Handle 429 status by waiting and then retrying
+                const retryAfter = response.headers.get("Retry-After") || 30; // Use the Retry-After header value or default to 30 seconds
+                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+                return getChatCompletion(prompt); // Retry the request
             }
+            throw new Error(`API Error: ${response.statusText}`);
         }
+
+        const jsonResponse = await response.json();
+        const assistantReply = jsonResponse.choices[0].message.content;
+        conversationHistory.push({ role: "assistant", content: assistantReply });
+        return assistantReply;
+
+    } catch (error) {
+        console.error(`Error with chat completion: ${error.message}`);
+        return "Sorry, I encountered an error. Please try again later.";
     }
+}
+
 })();
