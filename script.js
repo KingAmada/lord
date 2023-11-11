@@ -1,19 +1,19 @@
 (function() {
     // Initialization
     let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+    let synth = window.speechSynthesis;
     let manuallyStopped = false;
+    let recognitionActive = false;
     const RECOGNITION_TIMEOUT = 1000;  
     const INACTIVITY_DURATION = 90000; 
     let isAwakened = false;
     let inactivityTimeout;
-    let isRecognitionActive = false;
     let programmaticRestart = false;
-    let track = false;
 
     const WAKE_UP_PHRASES = ["Hi"];
     let conversationHistory = [{
         role: "system",
-        content: "You are an helpful assistant, but always respond like snoop dog or samuel l jackson or drake or tupac or bob marley or morgan freeman or the weeknd"
+        content: "You are an helpful assistant"
     }];
 
     // Event Listeners
@@ -21,28 +21,30 @@
     recognition.lang = 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+
     recognition.onresult = handleRecognitionResult;
     recognition.onaudiostart = () => { 
         console.log("Audio capturing started");
-        if (!track) {
+        if (!programmaticRestart) {
             displayMessage("Listening...", "user");
-            track =false;
         }
         programmaticRestart = false;
     };
     recognition.onsoundstart = () => { console.log("Some sound is being received"); };
     recognition.onspeechstart = () => { console.log("Speech has been detected"); };
-    recognition.onstart = () => { 
-    setVoiceButtonState("STOP");
-    setActiveMode();};
+    recognition.onstart = () => { recognitionActive = true; };
     recognition.onend = () => {
-  if (!manuallyStopped) {
-      programmaticRestart = true;
-          console.log("Recognition ended, attempting to restart.");
-    startRecognition();
-  } 
+        recognitionActive = false;
+        if (isVoiceButtonActive() && !synth.speaking && !manuallyStopped) {
+            programmaticRestart = true;
+            recognition.start();
+        }
     };
 
+    function isVoiceButtonActive() {
+        const voiceButton = document.getElementById("voice-btn");
+        return voiceButton && voiceButton.textContent === "STOP";
+    }
 
     function startsWithWakeUpPhrase(message) {
         return WAKE_UP_PHRASES.some(phrase => message.toLowerCase().startsWith(phrase));
@@ -75,29 +77,7 @@
             processCommand(userMessage);
         }
     }
-function startRecognition() {
-    // Check if the recognition is already active to prevent double-start errors)
-    if (!isRecognitionActive) {
-        console.log("Recognition ended, attempting to restart second stage.");
-        try {
-            recognition.start();
-            //isRecognitionActive = true;
-            console.log("Recognition started.");
-            setVoiceButtonState("STOP");
-        } catch (e) {
-            // Handle the error, e.g., if the recognition is already started
-            console.error("Error starting recognition:", e);
-        }
-    }
-}
 
-function stopRecognition() {
-    // Only attempt to stop if the recognition is currently active
-        recognition.stop();
-        isRecognitionActive = false;
-        console.log("Recognition stopped.");
-        setVoiceButtonState("START");
-}
     function processCommand(command) {
         getChatCompletion(command).then(displayAndSpeak);
         resetActiveTimer();
@@ -139,78 +119,73 @@ function stopRecognition() {
         return messageItem;
     }
 
-  async function textToSpeech(text) {
-  const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        type: 'tts', // Indicate that this is a TTS request
-        data: { // Data for the TTS request
-          model: "tts-1",
-          voice: "alloy",
-          input: text
-        }
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-      stopRecognition();
-      isRecognitionActive = false;
-      setVoiceButtonState("LISTENING");
-    const audioData = await response.blob();
-    // Play the audio blob with an audio element
-    const audioUrl = URL.createObjectURL(audioData);
-    const audio = new Audio(audioUrl);
-    audio.play();
-       // Update the UI to reflect that the assistant has finished speaking
-      audio.onended = () => {
-         if (!manuallyStopped) {
-             track=true;
-    startRecognition();
-           isRecognitionActive = false;
-         }
-    };
-  } catch (error) {
-    console.error('There was an error with the text-to-speech request:', error);
-  }
-}
-
-    function setVoiceButtonState(state) {
-         const voiceButton = document.getElementById("voice-btn");
-    if (state === "START") {
-        voiceButton.textContent = "START";
-        voiceButton.classList.remove("active", "listening");
-    } else if (state === "STOP") {
-        voiceButton.textContent = "STOP";
-        voiceButton.classList.add("active");
-        } else if (state === "LISTENING") {
-            voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
-        voiceButton.classList.add("listening");
+    function textToSpeech(text) {
+        if (synth.getVoices().length === 0) {
+            synth.onvoiceschanged = () => {
+                speakText(text, synth);
+            };
+        } else {
+            speakText(text, synth);
         }
     }
+
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
         if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
-    manuallyStopped = false;
-    startRecognition();
-  } else {
-    manuallyStopped = true;
-    stopRecognition();
+            manuallyStopped = false;
+            recognition.start();
+            voiceButton.textContent = "STOP";
+            setActiveMode();
+        } else {
+            manuallyStopped = true;
+            recognition.stop();
+            voiceButton.textContent = "START";
+            document.getElementById("voice-btn").classList.remove("active");
             const messageList = document.getElementById("message-list");
             const lastMessage = messageList.lastChild;
             if (lastMessage && lastMessage.textContent === "Listening...") {
                 messageList.removeChild(lastMessage);
             }
-  }
+        }
     });
-   
+
+    function getPreferredVoiceName() {
+        return /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent) ? "Google US English" : "Samantha";
+    }
+
+    function speakText(text, synth) {
+        recognition.stop();
+        if (synth.speaking) {
+            synth.cancel();
+        }
+        voiceButton.innerHTML = '<img src="https://kingamada.github.io/lord/listeng.gif" alt="Listening...">';
+        const voiceName = getPreferredVoiceName();
+        const targetVoice = synth.getVoices().find(voice => voice.name === voiceName) || synth.getVoices()[0];
+        
+        let chunks = text.split(/(?<=[.!?])\s+/);
+        let speakChunk = () => {
+            if (chunks.length === 0) {
+                voiceButton.textContent = "STOP";
+                if (!manuallyStopped) {
+                    programmaticRestart = true;
+                    recognition.start();
+                    displayMessage("Listening...", "user");
+                }
+                return;
+            }
+            let chunk = chunks.shift();
+            let utterance = new SpeechSynthesisUtterance(chunk);
+            utterance.voice = targetVoice;
+            utterance.rate = 1.1;
+            utterance.onend = () => {
+                setTimeout(speakChunk, 7);
+            };
+            synth.speak(utterance);
+        };
+
+        speakChunk();
+    }
+
     const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"];
 
     async function getChatCompletion(prompt, modelIndex = 0) {
@@ -221,13 +196,10 @@ function stopRecognition() {
 
         const currentModel = MODEL_PRIORITY[modelIndex];
         conversationHistory.push({ role: "system", content: prompt });
-        const endpoint = "https://lordne.vercel.app/api/openaiProxy";
+        const endpoint = "https://lord-nine.vercel.app/api/openaiProxy";
         const payload = {
-             type: 'chat', // Indicate that this is a chat request
-    data: { // Data for the chat completion request
-      model: currentModel,
-      messages: conversationHistory
-    }
+            model: currentModel,
+            messages: conversationHistory
         };
 
         try {
