@@ -101,10 +101,15 @@ function startRecognition() {
 
 function stopRecognition() {
     // Only attempt to stop if the recognition is currently active
+    if(manuallyStopped){
         recognition.stop();
         isRecognitionActive = false;
         console.log("Recognition stopped.");
         setVoiceButtonState("START");
+    } else {
+        recognition.stop();
+        isRecognitionActive = false;
+    }
 }
     function processCommand(command) {
         getChatCompletion(command).then(displayAndSpeak);
@@ -173,7 +178,6 @@ function stopRecognition() {
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
       stopRecognition();
-      isRecognitionActive = false;
       programmaticRestart = false;
       setVoiceButtonState("LISTENING");
     audio.play();
