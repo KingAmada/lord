@@ -75,7 +75,7 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
-     if (programmaticRestart && track) {
+     if (programmaticRestart && !track) {
        try {
            track=false;
             recognition.start();
@@ -99,7 +99,10 @@ function startRecognition() {
             console.error("Error starting recognition:", e);
         }
     }
-    //else if (programmaticRestart && track)
+    else if (programmaticRestart && track){
+    recognition.start();
+            isRecognitionActive = true;
+    }
 }
 
 function stopRecognition() {
