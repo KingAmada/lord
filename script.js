@@ -166,6 +166,7 @@ function stopRecognition() {
     }
 
   async function textToSpeech(text) {
+      track3 = false;
   const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
   try {
     const response = await fetch(endpoint, {
