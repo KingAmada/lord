@@ -81,6 +81,7 @@ console.log("More than ",timeDiff," seconds have passed since the audio ended." 
         if (timeDiff > 5) {
             // Call the desired function if more than 3 seconds have passed
            // if(!isRecognitionActive){
+            onAudioEnd();
       programmaticRestart = true;
             startRecognition();
                 console.log("More than 3 seconds have passed since the audio ended."
