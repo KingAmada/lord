@@ -189,8 +189,9 @@ function stopRecognition() {
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
          if (!manuallyStopped) {
-    startRecognition();
+             
             onAudioEnd();
+    startRecognition();
              console.log("voice message end.");
          }
     };
