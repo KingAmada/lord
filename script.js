@@ -10,6 +10,7 @@
     let programmaticRestart = false;
     let track = false;
     let track2 = false;
+    let track3 = false;
 
     const WAKE_UP_PHRASES = ["Hi"];
     let conversationHistory = [{
@@ -38,6 +39,10 @@
         if(track){
       startRecognition();
             console.log("Recognition startd.");
+        }
+         if(track2){
+      track3=true;
+            console.log("track 3 startd.");
         }
     };
 
@@ -99,7 +104,7 @@ function startRecognition() {
             console.error("Error starting recognition:", e);
         }
     }
-    else if (programmaticRestart && track){
+    else if (programmaticRestart && track && track3 ){
         track=false;
         console.log("Recognition --sorted--.");
     recognition.start();
@@ -194,6 +199,7 @@ function stopRecognition() {
           track=true;
          if (!manuallyStopped) {
     startRecognition();
+  //           track3=true;
              console.log("voice message end.");
          }
     };
