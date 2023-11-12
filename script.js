@@ -32,7 +32,6 @@ let audioEndTime = null;
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
-      console.log("Programatic Restart");
        checkAudioEndDurationAndExecute();
     };
 
@@ -78,12 +77,13 @@ let audioEndTime = null;
     if (audioEndTime) {
         const currentTime = new Date();
         const timeDiff = (currentTime - audioEndTime) / 1000; // Convert milliseconds to seconds
-
-        if (timeDiff > 3) {
+console.log("More than ",timeDiff," seconds have passed since the audio ended." );
+        if (timeDiff > 2) {
             // Call the desired function if more than 3 seconds have passed
             if(!isRecognitionActive){
       programmaticRestart = true;
             startRecognition();}
+            console.log("More than 3 seconds have passed since the audio ended.");
         } else {
             console.log("Less than 3 seconds have passed since the audio ended.");
         }
