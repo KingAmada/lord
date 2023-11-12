@@ -168,14 +168,14 @@ function stopRecognition() {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-      stopRecognition();
-      isRecognitionActive = false;
-      setVoiceButtonState("LISTENING");
     const audioData = await response.blob();
     // Play the audio blob with an audio element
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
+      stopRecognition();
+      isRecognitionActive = false;
+      programmaticRestart = false;
+      setVoiceButtonState("LISTENING");
     audio.play();
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
@@ -205,10 +205,12 @@ function stopRecognition() {
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
         if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
-    manuallyStopped = false;
-    startRecognition();
-  } else {
     manuallyStopped = true;
+    startRecognition();
+            setVoiceButtonState("STOP");
+  } else {
+            setVoiceButtonState("START");
+    manuallyStopped = false;
     stopRecognition();
             const messageList = document.getElementById("message-list");
             const lastMessage = messageList.lastChild;
