@@ -36,6 +36,7 @@
       console.log("Programatic Restart");
         if(track){
       startRecognition();
+            console.log("Recognition startd.");
         }
     };
 
