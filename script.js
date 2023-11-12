@@ -24,9 +24,6 @@ let audioEndTime = null;
     recognition.onresult = handleRecognitionResult;
     recognition.onaudiostart = () => { 
         console.log("Audio capturing started");
-        if (!programmaticRestart) {
-            displayMessage("Listening...", "user");
-        }
     };
     recognition.onstart = () => { 
     setVoiceButtonState("STOP");
@@ -189,6 +186,7 @@ function stopRecognition() {
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
          if (!manuallyStopped) {
+            displayMessage("Listening...", "user");
     startRecognition();
             onAudioEnd();
              console.log("voice message end.");
