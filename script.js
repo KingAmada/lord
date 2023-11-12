@@ -78,12 +78,14 @@ let audioEndTime = null;
         const currentTime = new Date();
         const timeDiff = (currentTime - audioEndTime) / 1000; // Convert milliseconds to seconds
 console.log("More than ",timeDiff," seconds have passed since the audio ended." );
-        if (timeDiff > 2) {
+        if (timeDiff > 5) {
             // Call the desired function if more than 3 seconds have passed
-            if(!isRecognitionActive){
+           // if(!isRecognitionActive){
       programmaticRestart = true;
-            startRecognition();}
-            console.log("More than 3 seconds have passed since the audio ended.");
+            startRecognition();
+                console.log("More than 3 seconds have passed since the audio ended."
+          //  }
+            );
         } else {
             console.log("Less than 3 seconds have passed since the audio ended.");
         }
