@@ -105,7 +105,7 @@ function startRecognition() {
         }
     }
     else if (programmaticRestart && track && track3 ){
-        track=false;
+        //track=false;
         console.log("Recognition --sorted--.");
     recognition.start();
             isRecognitionActive = true;
@@ -199,7 +199,7 @@ function stopRecognition() {
           track=true;
          if (!manuallyStopped) {
     startRecognition();
-  //           track3=true;
+             track3=true;
              console.log("voice message end.");
          }
     };
