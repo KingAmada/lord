@@ -23,6 +23,7 @@ let audioEndTime = null;
     recognition.maxAlternatives = 1;
     recognition.onresult = handleRecognitionResult;
     recognition.onaudiostart = () => { 
+            displayMessage("Listening...", "user");
         console.log("Audio capturing started");
     };
     recognition.onstart = () => { 
