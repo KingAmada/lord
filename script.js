@@ -37,13 +37,14 @@
       programmaticRestart = true;
       console.log("Programatic Restart");
         if(track){
-      startRecognition();
-            console.log("Recognition startd.");
-        }
-         if(track2){
+            if(track2){
       track3=true;
             console.log("track 3 startd.");
         }
+      startRecognition();
+            console.log("Recognition startd.");
+        }
+         
     };
 
 
@@ -105,7 +106,7 @@ function startRecognition() {
         }
     }
     else if (programmaticRestart && track && track3 ){
-        track=false;
+        track2=true;
         console.log("Recognition --sorted--.");
     recognition.start();
             isRecognitionActive = true;
