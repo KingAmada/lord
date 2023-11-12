@@ -36,7 +36,9 @@
     recognition.onend = () => {
       programmaticRestart = true;
       console.log("Programatic Restart");
+        if(track){
       startRecognition();
+        }
     };
 
 
@@ -183,6 +185,7 @@ function stopRecognition() {
     audio.play();
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
+          track=true;
          if (!manuallyStopped) {
     startRecognition();
 //             isRecognitionActive = false;
