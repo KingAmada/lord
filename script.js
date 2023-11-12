@@ -77,6 +77,7 @@ function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
      if (programmaticRestart) {
        try {
+           track=false;
             recognition.start();
             isRecognitionActive = true;
             console.log("Recognition started.");
