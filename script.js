@@ -27,7 +27,6 @@
         if (!programmaticRestart) {
             displayMessage("Listening...", "user");
         }
-        programmaticRestart = false;
     };
     recognition.onsoundstart = () => { console.log("Some sound is being received"); };
     recognition.onspeechstart = () => { console.log("Speech has been detected"); };
@@ -35,11 +34,9 @@
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
-  if (!manuallyStopped) {
       programmaticRestart = true;
-          console.log("Recognition ended, attempting to restart.");
-    startRecognition();
-  } 
+      console.log("Programatic Restart");
+      startRecognition();
     };
 
 
@@ -76,7 +73,19 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
-    if (!isRecognitionActive) {
+     if (programmaticRestart) {
+       try {
+            recognition.start();
+            isRecognitionActive = true;
+            console.log("Recognition started.");
+            setVoiceButtonState("STOP");
+        } catch (e) {
+            // Handle the error, e.g., if the recognition is already started
+            console.error("Error starting recognition:", e);
+        }
+  }
+        else if (!programmaticRestart) {
+        programmaticRestart = false;
         console.log("Recognition ended, attempting to restart second stage.");
         try {
             recognition.start();
