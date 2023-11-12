@@ -81,8 +81,9 @@ let audioEndTime = null;
 
         if (timeDiff > 3) {
             // Call the desired function if more than 3 seconds have passed
+            if(!isRecognitionActive){
       programmaticRestart = true;
-            startRecognition();
+            startRecognition();}
         } else {
             console.log("Less than 3 seconds have passed since the audio ended.");
         }
