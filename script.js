@@ -8,9 +8,7 @@
     let inactivityTimeout;
     let isRecognitionActive = false;
     let programmaticRestart = false;
-    let track = false;
-    let track2 = false;
-    let track3 = false;
+let audioEndTime = null;
 
     const WAKE_UP_PHRASES = ["Hi"];
     let conversationHistory = [{
@@ -34,17 +32,8 @@
     setVoiceButtonState("STOP");
     setActiveMode();};
     recognition.onend = () => {
-      programmaticRestart = true;
       console.log("Programatic Restart");
-        if(track){
-            if(track2){
-      track3=true;
-            console.log("track 3 startd.");
-        }
-      startRecognition();
-            console.log("Recognition startd.");
-        }
-         
+       checkAudioEndDurationAndExecute();
     };
 
 
@@ -61,6 +50,11 @@
             });
         });
     }
+    
+    function onAudioEnd() {
+    // Record the time when the audio ends
+    audioEndTime = new Date();
+}
 
     function handleRecognitionResult(event) {
         const userMessage = event.results[event.results.length - 1][0].transcript.trim();
@@ -79,11 +73,27 @@
             processCommand(userMessage);
         }
     }
+
+    function checkAudioEndDurationAndExecute() {
+    if (audioEndTime) {
+        const currentTime = new Date();
+        const timeDiff = (currentTime - audioEndTime) / 1000; // Convert milliseconds to seconds
+
+        if (timeDiff > 3) {
+            // Call the desired function if more than 3 seconds have passed
+      programmaticRestart = true;
+            startRecognition();
+        } else {
+            console.log("Less than 3 seconds have passed since the audio ended.");
+        }
+    } else {
+        console.log("Audio end time is not set.");
+    }
+}
+    
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
-     if (programmaticRestart && !track) {
        try {
-           track=false;
             recognition.start();
             isRecognitionActive = true;
             console.log("Recognition started.");
@@ -92,25 +102,6 @@ function startRecognition() {
             // Handle the error, e.g., if the recognition is already started
             console.error("Error starting recognition:", e);
         }
-  }
-        else if (!programmaticRestart) {
-        programmaticRestart = false;
-        try {
-            recognition.start();
-            isRecognitionActive = true;
-            console.log("Recognition --started--.");
-            setVoiceButtonState("STOP");
-        } catch (e) {
-            // Handle the error, e.g., if the recognition is already started
-            console.error("Error starting recognition:", e);
-        }
-    }
-    else if (programmaticRestart && track && track3 ){
-        track2=true;
-        console.log("Recognition --sorted--.");
-    recognition.start();
-            isRecognitionActive = true;
-    }
 }
 
 function stopRecognition() {
@@ -167,7 +158,6 @@ function stopRecognition() {
     }
 
   async function textToSpeech(text) {
-      track3 = false;
   const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
   try {
     const response = await fetch(endpoint, {
@@ -198,10 +188,9 @@ function stopRecognition() {
     audio.play();
        // Update the UI to reflect that the assistant has finished speaking
       audio.onended = () => {
-          track=true;
          if (!manuallyStopped) {
     startRecognition();
-             track3=true;
+            onAudioEnd();
              console.log("voice message end.");
          }
     };
