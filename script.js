@@ -75,7 +75,7 @@
     }
 function startRecognition() {
     // Check if the recognition is already active to prevent double-start errors)
-     if (programmaticRestart) {
+     if (programmaticRestart && !track) {
        try {
            track=false;
             recognition.start();
@@ -189,7 +189,7 @@ function stopRecognition() {
           track=true;
          if (!manuallyStopped) {
     startRecognition();
-//             isRecognitionActive = false;
+             console.log("voice message end.");
          }
     };
   } catch (error) {
