@@ -105,7 +105,7 @@ function startRecognition() {
         }
     }
     else if (programmaticRestart && track && track3 ){
-        //track=false;
+        track=false;
         console.log("Recognition --sorted--.");
     recognition.start();
             isRecognitionActive = true;
