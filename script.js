@@ -93,7 +93,7 @@ function startRecognition() {
         try {
             recognition.start();
             isRecognitionActive = true;
-            console.log("Recognition started.");
+            console.log("Recognition --started--.");
             setVoiceButtonState("STOP");
         } catch (e) {
             // Handle the error, e.g., if the recognition is already started
@@ -213,12 +213,11 @@ function stopRecognition() {
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
         if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
-    manuallyStopped = true;
     startRecognition();
             setVoiceButtonState("STOP");
   } else {
             setVoiceButtonState("START");
-    manuallyStopped = false;
+    manuallyStopped = true;
     stopRecognition();
             const messageList = document.getElementById("message-list");
             const lastMessage = messageList.lastChild;
