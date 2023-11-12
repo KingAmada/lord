@@ -28,8 +28,6 @@
             displayMessage("Listening...", "user");
         }
     };
-    recognition.onsoundstart = () => { console.log("Some sound is being received"); };
-    recognition.onspeechstart = () => { console.log("Speech has been detected"); };
     recognition.onstart = () => { 
     setVoiceButtonState("STOP");
     setActiveMode();};
@@ -89,7 +87,6 @@ function startRecognition() {
   }
         else if (!programmaticRestart) {
         programmaticRestart = false;
-        console.log("Recognition ended, attempting to restart second stage.");
         try {
             recognition.start();
             isRecognitionActive = true;
