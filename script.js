@@ -221,6 +221,7 @@ function stopRecognition() {
     const voiceButton = document.getElementById("voice-btn");
     voiceButton.addEventListener("click", function() {
         if (voiceButton.textContent === "START" || voiceButton.querySelector("svg")) {
+            manuallyStopped = false;
     startRecognition();
             setVoiceButtonState("STOP");
   } else {
