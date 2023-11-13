@@ -162,6 +162,7 @@ function stopRecognition() {
     }
 
   async function textToSpeech(text) {
+      stopRecognition();
   const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
   try {
     const response = await fetch(endpoint, {
@@ -186,7 +187,7 @@ function stopRecognition() {
     // Play the audio blob with an audio element
     const audioUrl = URL.createObjectURL(audioData);
     const audio = new Audio(audioUrl);
-      stopRecognition();
+      
       programmaticRestart = false;
       setVoiceButtonState("LISTENING");
     audio.play();
@@ -237,6 +238,7 @@ function stopRecognition() {
     const MODEL_PRIORITY = ["gpt-4", "gpt-3.5-turbo", "gpt-3", "gpt-2"];
 
     async function getChatCompletion(prompt, modelIndex = 0) {
+        stopRecognition();
         if (modelIndex >= MODEL_PRIORITY.length) {
             console.error("All models exhausted.");
             return "Sorry, I encountered multiple errors. Please try again later.";
