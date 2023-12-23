@@ -195,10 +195,10 @@ function chunkText(text, maxChunkSize) {
 // Audio Queue
 let audioQueue = [];
 function addToAudioQueue(audioUrl) {
-    console.log(audioQueue.length," Audio Queue Length");
+    //console.log(audioQueue.length," Audio Queue Length");
     audioQueue.push(audioUrl);
-    console.log(audioQueue.length," Audio2 Queue Length");
-    if (audioQueue.length === 1) {
+    //console.log(audioQueue.length," Audio2 Queue Length");
+    if (audioQueue.length === 2) {
         console.log(audioQueue.length," Audio3 Queue Length");
         // If this is the first item, start playing
         playNextInQueue();
