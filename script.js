@@ -252,8 +252,7 @@ async function textToSpeech(text) {
 
             const audioData = await response.blob();
             const audioUrl = URL.createObjectURL(audioData);
-            //audioQueue.push(audioUrl);
-addToAudioQueue(audioUrl);
+          addToAudioQueue(audioUrl);
             
         } catch (error) {
             console.error('There was an error with the text-to-speech request:', error);
