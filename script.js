@@ -213,8 +213,8 @@ function playNextInQueue() {
             // Play the next audio after the current one ends
             playNextInQueue();
         };
-        //let audioUrl = audioQueue.shift();
-       // const audio = new Audio(audioUrl);
+        let audioUrl = audioQueue.shift();
+       const audio = new Audio(audioUrl);
     } else {
         // This executes after all audios in the queue have been played
         onAudioEnd(); // Custom function to handle end of audio playback
