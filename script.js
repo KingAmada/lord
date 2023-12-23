@@ -204,11 +204,12 @@ function addToAudioQueue(audioUrl) {
         playNextInQueue();
     }
 }
+    let count=0;
 function playNextInQueue() {
     console.log(audioQueue.length," Audio4 Queue Length");
     if (audioQueue.length > 0) {
         console.log(audioQueue.length," Audio5 Queue Length");
-        let audioUrl = audioQueue[0];
+        let audioUrl = audioQueue[count];
         console.log(audioUrl," Audio5 Queue Length");
        const audio = new Audio(audioUrl);
         console.log(audioQueue.length," Audio6 Queue Length");
@@ -216,6 +217,7 @@ function playNextInQueue() {
         audio.onended = () => {
             // Play the next audio after the current one ends
            audio.onended = () => {
+               count=count+1;
             playNextInQueue();
                //audioQueue.shift();
                };
