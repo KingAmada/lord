@@ -202,6 +202,7 @@ function addToAudioQueue(audioUrl) {
     }
 }
 function playNextInQueue() {
+    
     if (audioQueue.length > 0) {
         let audioUrl = audioQueue.shift();
         const audio = new Audio(audioUrl);
@@ -247,11 +248,9 @@ async function textToSpeech(text) {
 
             const audioData = await response.blob();
             const audioUrl = URL.createObjectURL(audioData);
-            audioQueue.push(audioUrl);
-
-            if (audioQueue.length === 1) {
-                playNextInQueue();
-            }
+            //audioQueue.push(audioUrl);
+addToAudioQueue(audioUrl);
+            
         } catch (error) {
             console.error('There was an error with the text-to-speech request:', error);
             startRecognition();
