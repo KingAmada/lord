@@ -210,15 +210,16 @@ function playNextInQueue() {
     if (audioQueue.length > 0) {
         console.log(audioQueue.length," Audio5 Queue Length");
         let audioUrl = audioQueue[count];
-        console.log(audioUrl," Audio5 Queue Length");
+        console.log(audioUrl," Audio6 Queue Length");
        const audio = new Audio(audioUrl);
-        console.log(audioQueue.length," Audio6 Queue Length");
+        console.log(audioQueue.length," Audio7 Queue Length");
         audio.play();
         audio.onended = () => {
             // Play the next audio after the current one ends
            audio.onended = () => {
                count=count+1;
             playNextInQueue();
+               console.log(audioQueue.length," Audio8 Queue Length");
                //audioQueue.shift();
                };
         };
