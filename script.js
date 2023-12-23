@@ -181,8 +181,72 @@ function stopRecognition() {
         messageList.scrollTop = messageList.scrollHeight;
         return messageItem;
     }
+function chunkText(text, maxChunkSize) {
+    let chunks = [];
+    while (text.length > 0) {
+        let chunkSize = Math.min(text.length, maxChunkSize);
+        let chunk = text.substring(0, chunkSize);
+        chunks.push(chunk);
+        text = text.substring(chunkSize);
+    }
+    return chunks;
+}
 
-  async function textToSpeech(text) {
+// Audio Queue
+let audioQueue = [];
+
+function playNextInQueue() {
+    if (audioQueue.length > 0) {
+        let audio = new Audio(audioQueue.shift());
+        audio.play();
+        audio.onended = playNextInQueue;
+    }
+}
+
+// Modified textToSpeech function
+async function textToSpeech(text) {
+    stopRecognition();
+    const maxChunkSize = 100; // Adjust as needed
+    const textChunks = chunkText(text, maxChunkSize);
+
+    for (const chunk of textChunks) {
+        try {
+            const response = await fetch('https://lordne.vercel.app/api/openaiProxy', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: 'tts', // Indicate that this is a TTS request
+                    data: { // Data for the TTS request
+                        model: "tts-1",
+                        voice: "alloy",
+                        input: chunk
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const audioData = await response.blob();
+            const audioUrl = URL.createObjectURL(audioData);
+            audioQueue.push(audioUrl);
+
+            if (audioQueue.length === 1) {
+                playNextInQueue();
+            }
+        } catch (error) {
+            console.error('There was an error with the text-to-speech request:', error);
+            startRecognition();
+        }
+    }
+
+    programmaticRestart = false;
+    setVoiceButtonState("LISTENING");
+}
+  /*async function textToSpeech(text) {
       stopRecognition();
   const endpoint = 'https://lordne.vercel.app/api/openaiProxy';
   try {
@@ -225,7 +289,7 @@ function stopRecognition() {
     console.error('There was an error with the text-to-speech request:', error);
       startRecognition();
   }
-}
+}*/
 
     function setVoiceButtonState(state) {
          const voiceButton = document.getElementById("voice-btn");
