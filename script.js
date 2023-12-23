@@ -207,17 +207,14 @@ function playNextInQueue() {
         const audio = new Audio(audioUrl);
         audio.play();
         audio.onended = () => {
-            if (audioQueue.length > 0) {
-                // If there are more audios in the queue, play the next one
-                playNextInQueue();
-            } else {
-                // This block executes after all audios in the queue have been played
-                // Include any final actions here, like resetting states or UI elements
-                onAudioEnd(); // Custom function to handle end of audio playback
-                startRecognition(); // Restart voice recognition
-                setVoiceButtonState("LISTENING"); // Update UI state
-            }
+            // Play the next audio after the current one ends
+            playNextInQueue();
         };
+    } else {
+        // This executes after all audios in the queue have been played
+        onAudioEnd(); // Custom function to handle end of audio playback
+        startRecognition(); // Restart voice recognition
+        setVoiceButtonState("LISTENING"); // Update UI state
     }
 }
 
