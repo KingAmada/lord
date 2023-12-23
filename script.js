@@ -198,7 +198,7 @@ function addToAudioQueue(audioUrl) {
     //console.log(audioQueue.length," Audio Queue Length");
     audioQueue.push(audioUrl);
     //console.log(audioQueue.length," Audio2 Queue Length");
-    if (audioQueue.length === 2) {
+    if (audioQueue.length === 1) {
         console.log(audioQueue.length," Audio3 Queue Length");
         // If this is the first item, start playing
         playNextInQueue();
@@ -213,7 +213,9 @@ function playNextInQueue() {
         audio.play();
         audio.onended = () => {
             // Play the next audio after the current one ends
+           audio.onended = () => {
             playNextInQueue();
+               };
         };
         
     } else {
