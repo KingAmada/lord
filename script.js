@@ -216,8 +216,8 @@ function playNextInQueue() {
         audio.onended = () => {
             // Play the next audio after the current one ends
            audio.onended = () => {
-                audioQueue.shift();
             playNextInQueue();
+               audioQueue.shift();
                };
         };
         
