@@ -194,12 +194,30 @@ function chunkText(text, maxChunkSize) {
 
 // Audio Queue
 let audioQueue = [];
-
+function addToAudioQueue(audioUrl) {
+    audioQueue.push(audioUrl);
+    if (audioQueue.length === 1) {
+        // If this is the first item, start playing
+        playNextInQueue();
+    }
+}
 function playNextInQueue() {
     if (audioQueue.length > 0) {
-        let audio = new Audio(audioQueue.shift());
+        let audioUrl = audioQueue.shift();
+        const audio = new Audio(audioUrl);
         audio.play();
-        audio.onended = playNextInQueue;
+        audio.onended = () => {
+            if (audioQueue.length > 0) {
+                // If there are more audios in the queue, play the next one
+                playNextInQueue();
+            } else {
+                // This block executes after all audios in the queue have been played
+                // Include any final actions here, like resetting states or UI elements
+                onAudioEnd(); // Custom function to handle end of audio playback
+                startRecognition(); // Restart voice recognition
+                setVoiceButtonState("LISTENING"); // Update UI state
+            }
+        };
     }
 }
 
